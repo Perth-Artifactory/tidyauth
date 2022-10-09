@@ -65,7 +65,7 @@ def api_id():
         keys = k
     elif up == "file":
         with open(config["backup"],"r") as f:
-        keys = json.load(f)
+            keys = json.load(f)
     if keys:
         return jsonify(keys)
     else:
