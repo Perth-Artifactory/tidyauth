@@ -78,7 +78,7 @@ if __name__ == "__main__":
     from waitress import serve
     keys = {}
     print("Loading keys from file cache...")
-    with open("keys_api.json","r") as f:
+    with open(config["backup"],"r") as f:
         keys = json.load(f)
     print("Updated keys, {} keys found".format(len(keys)))
     k = pull_from_tidyhq()
