@@ -63,6 +63,9 @@ def api_id():
         if not k:
             return jsonify({'message':'Could not reach TidyHQ'}), 502
         keys = k
+    elif up == "file":
+        with open(config["backup"],"r") as f:
+        keys = json.load(f)
     if keys:
         return jsonify(keys)
     else:
