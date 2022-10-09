@@ -85,4 +85,4 @@ if __name__ == "__main__":
     if k:
         keys = k
     print("Auth server starting...")
-    serve(app, host="0.0.0.0", port=5000)
+    serve(app, host=config["server"]["address"], port=config["server"]["port"])
