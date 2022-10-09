@@ -84,5 +84,5 @@ if __name__ == "__main__":
     k = pull_from_tidyhq()
     if k:
         keys = k
-    print("Auth server starting...")
+    print("Auth server starting on {address}:{port}...".format(**config["server"]))
     serve(app, host=config["server"]["address"], port=config["server"]["port"])
