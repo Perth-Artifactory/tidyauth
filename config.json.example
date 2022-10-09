@@ -1,0 +1,12 @@
+{
+	"tidytoken": "TidyHQ authentication token",
+	"contacts_url": "https://api.tidyhq.com/v1/contacts",
+	"tokens": ["List of authentication tokens"],
+    "backup": "keys.json",
+	"ids": {
+		"status": "Custom field ID for tag status",
+		"tag": "Custom field ID for tag ID",
+		"sound": "Custom field ID for tag sound",
+		"enabled": "Custom value ID for enabled key"
+	}
+}
