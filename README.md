@@ -15,13 +15,16 @@ This script queries the TidyHQ api for access key information.
 
 ```bash
 ./main.py
-Loading keys from file cache...
-Updated keys, 69 keys found
 Attempting to refresh keys from TidyHQ...
 Polling TidyHQ
 Received response from TidyHQ
-Updated keys, 69 keys found
-Keys written to backup file
+Updated keys for zone:door, 5 keys processed
+5 keys written to backup file: backup.door.json
+Attempting to refresh keys from TidyHQ...
+Polling TidyHQ
+Received response from TidyHQ
+Updated keys for zone:vending, 6 keys processed
+6 keys written to backup file: backup.vending.json
 Auth server starting on 0.0.0.0:8080...
 ```
 
@@ -31,11 +34,19 @@ Auth server starting on 0.0.0.0:8080...
 
 A response on `/` is included for route testing purposes.
 
-### Keys
+### Door
 
 `/api/v1/keys/door`
 
 Pass a token using `token` and (if desired) an update source using `update`. Right now the only valid update sources are `tidyhq` and `file`.
+
+TODO: Sample output
+
+### Vending Machine
+
+Pass a token using `token` and (if desired) an update source using `update`. Right now the only valid update sources are `tidyhq` and `file`.
+
+TODO: Sample output
 
 ### Response codes
 

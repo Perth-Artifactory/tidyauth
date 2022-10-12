@@ -11,7 +11,26 @@ with open("config.json","r") as f:
 tokens = config["tokens"]
 
 app = flask.Flask(__name__)
-app.config["DEBUG"] = True
+
+def backup(zone, mode, k=None):
+    if mode == "r":
+        with open("backup.{}.json".format(zone), mode) as f:
+            print("Loading keys from file cache...")
+            try:
+                k = json.load(f)
+            except FileNotFoundError:
+                return {}
+            except json.decoder.JSONDecodeError:
+                return {}
+            print("Loaded keys, {} keys found".format(len(k)))
+            return k
+    
+    elif mode == "w":
+        with open("backup.{}.json".format(zone), mode) as f:
+            json.dump(k,f, indent=4)
+            print("{} keys written to backup file: backup.{}.json".format(len(k),zone))
+            return True
+    return False
 
 def pull_from_tidyhq(zone):
     
@@ -61,7 +80,7 @@ def pull_from_tidyhq(zone):
             for field in person["custom_fields"]:
                 if field["id"] == config["ids"]["tag"]:
                     id = field["value"]
-                elif field["id"] == config["ids"]["drink"] or field["id"] == "6ad83ec447fc":
+                elif field["id"] == config["ids"]["drink"]:
                     drink = field["value"]["id"]
             if id:
                 keys[id] = {"name": "{first_name} {last_name}".format(**person),
@@ -70,69 +89,71 @@ def pull_from_tidyhq(zone):
                 keys[id]["drink"] = drink
 
     # Generic notification and saving
-    print("Updated keys for zone:{}, {} keys found".format(zone,len(door_keys)))
-    with open(config["backup.{}.json".format(zone)],"w") as f:
-        json.dump(keys,f, indent=4)
-        print("Keys written to backup file: backup.{}.json".format(zone))
+    print("Updated keys for zone:{}, {} keys processed".format(zone,len(keys)))
+    backup(zone=zone, mode="w", k=keys)
     return keys
 
 @app.route('/api/v1/keys/door', methods=['GET'])
 def query_door():
-    global door_keys
+    global data
+    zone="door"
     token = request.args.get('token')
     up = request.args.get('update')
     if token not in tokens:
         return jsonify({'message':'Send a valid token'}), 401
+
     if up == "tidyhq":
-        k = pull_from_tidyhq(zone="door")
+        k = pull_from_tidyhq(zone=zone)
         if not k:
             return jsonify({'message':'Could not reach TidyHQ'}), 502
-        door_keys = k
+        data[zone] = k
     elif up == "file":
-        with open("backup.door.json","r") as f:
-            door_keys = json.load(f)
-    if door_keys:
-        return jsonify(door_keys)
+        data[zone] = backup(zone=zone, mode="r")
+
+    if data[zone]:
+        return jsonify(data[zone])
     else:
         print("No keys in cache, pulling from TidyHQ")
-        keys = pull_from_tidyhq(zone="door")
-        return jsonify(door_keys)
+        data[zone] = pull_from_tidyhq(zone=zone)
+        return jsonify(data[zone])
 
 @app.route('/api/v1/keys/vending', methods=['GET'])
 def api_id():
-    global vend_keys
+    global data
+    zone="vending"
     token = request.args.get('token')
     up = request.args.get('update')
     if token not in tokens:
         return jsonify({'message':'Send a valid token'}), 401
+
     if up == "tidyhq":
-        k = pull_from_tidyhq(zone="vending")
+        k = pull_from_tidyhq(zone=zone)
         if not k:
             return jsonify({'message':'Could not reach TidyHQ'}), 502
-        vend_keys = k
+        data[zone] = k
     elif up == "file":
-        with open("backup.vending.json","r") as f:
-            vend_keys = json.load(f)
-    if vend_keys:
-        return jsonify(vend_keys)
+        data[zone] = backup(zone=zone, mode="r")
+
+    if data[zone]:
+        return jsonify(data[zone])
     else:
         print("No keys in cache, pulling from TidyHQ")
-        vend_keys = pull_from_tidyhq(zone="vending")
-        return jsonify(vend_keys)
+        data[zone] = pull_from_tidyhq(zone=zone)
+        return jsonify(data[zone])
 
 @app.route('/', methods=['GET'])
 def home():
     return "<h1>Artifactory Auth</h1><p>Authentication for doors and such</p>"
 
 if __name__ == "__main__":
+    zones = ["door", "vending"]
+    data = {}
+    for zone in zones:
+        data[zone] = pull_from_tidyhq(zone=zone)
+        if not data[zone]:
+            print("Could not pull from TidyHQ, loading file backup")
+            data[zone] = backup(zone=zone, mode="r")
+        
     from waitress import serve
-    keys = {}
-    print("Loading keys from file cache...")
-    with open(config["backup"],"r") as f:
-        keys = json.load(f)
-    print("Updated keys, {} keys found".format(len(keys)))
-    k = pull_from_tidyhq()
-    if k:
-        keys = k
     print("Auth server starting on {address}:{port}...".format(**config["server"]))
     serve(app, host=config["server"]["address"], port=config["server"]["port"])
