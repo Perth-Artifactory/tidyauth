@@ -7,6 +7,8 @@ from flask import request, jsonify
 
 with open("config.json","r") as f:
     config = json.load(f)
+    
+tokens = config["tokens"]
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
