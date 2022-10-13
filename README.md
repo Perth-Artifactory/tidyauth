@@ -10,6 +10,8 @@ This script queries the TidyHQ api for access key information.
 
 * Copy `config.json.example` to `config.json`
 * Add TidyHQ information, an easy way to get IDs is from `GET /contacts/me`
+* If you want this endpoint to check tokens set ["server"]["debug"] to `true`. Production instances should set this to `false`
+* Set your tokens. The server will warn you if you've left example tokens in the file.
 
 ## Running
 
@@ -32,7 +34,7 @@ Auth server starting on 0.0.0.0:8080...
 
 ### Testing
 
-A response on `/` is included for route testing purposes.
+A response on `/` is included for route testing purposes. It will return `200` if you have provided a valid token or `401` if not.
 
 ### Door
 

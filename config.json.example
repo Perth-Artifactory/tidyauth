@@ -2,9 +2,13 @@
 	"tidytoken": "TidyHQ authentication token",
 	"contacts_url": "https://api.tidyhq.com/v1/contacts",
 	"tokens": ["List of authentication tokens",
-			   "DEMO CLIENT"],
-	"server": {"address":"0.0.0.0",
-               "port":8080},
+		"DEMO CLIENT"
+	],
+	"server": {
+		"address": "0.0.0.0",
+		"port": 8080,
+		"debug": true
+	},
 	"ids": {
 		"status": "Custom field ID for tag status",
 		"tag": "Custom field ID for tag ID",

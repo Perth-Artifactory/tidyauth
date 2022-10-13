@@ -147,7 +147,12 @@ def api_id():
 
 @app.route('/', methods=['GET'])
 def home():
-    return "<h1>Artifactory Auth</h1><p>Authentication for doors and such</p>"
+    token = request.args.get('token')
+    if config["server"]["debug"]:
+        if token not in tokens:
+            return jsonify({'message':"You've successfuly reached the auth service but need to provide a token to continue"}), 401
+        return jsonify({'message':"You're good to go!"}), 200
+    return jsonify({'message':"You're good to go!"}), 200
 
 if __name__ == "__main__":
     zones = ["door", "vending"]
@@ -161,4 +166,10 @@ if __name__ == "__main__":
         
     from waitress import serve
     print("Auth server starting on {address}:{port}...".format(**config["server"]))
+    if config["server"]["debug"]:
+        print("WARNING: Debug mode enabled. Do not use in production!")
+    if "DEMO CLIENT" in tokens:
+        print("WARNING: Demo client token active. Do not use in production!")
+    if "List of authentication tokens" in tokens:
+        print("WARNING: Placeholder token active. Do not use in production!")
     serve(app, host=config["server"]["address"], port=config["server"]["port"])
