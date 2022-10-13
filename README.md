@@ -1,6 +1,6 @@
 # TidyHQ key authentication wrapper
 
-This script queries the TidyHQ api for access key information.
+This script queries the TidyHQ api for information like access keys.
 
 ## Installation
 
@@ -20,14 +20,22 @@ This script queries the TidyHQ api for access key information.
 Attempting to refresh keys from TidyHQ...
 Polling TidyHQ
 Received response from TidyHQ
-Updated keys for zone:door, 5 keys processed
-5 keys written to backup file: backup.door.json
-Updated keys for zone:vending, 6 keys processed
-6 keys written to backup file: backup.vending.json
+Updated keys for zone:door.keys, 5 keys processed
+5 keys written to backup file: backup.door.keys.json
+Updated keys for zone:vending.keys, 6 keys processed
+6 keys written to backup file: backup.vending.keys.json
+Attempting to refresh keys from TidyHQ...
+Polling TidyHQ
+Received response from TidyHQ
+Attempting to get option data from TidyHQ...
+Polling TidyHQ
+Received response from TidyHQ
 Auth server starting on 0.0.0.0:8080...
 ```
 
 ## Usage
+
+Pass a token using `token` and (if desired) an update source using `update`. Right now the only valid update sources are `tidyhq` and `file`.
 
 ### Testing
 
@@ -35,9 +43,9 @@ A response on `/` is included for route testing purposes. It will return `200` i
 
 ### Door
 
-`/api/v1/keys/door`
+#### Keys
 
-Pass a token using `token` and (if desired) an update source using `update`. Right now the only valid update sources are `tidyhq` and `file`.
+`/api/v1/keys/door`
 
 ```json
 {"0012345678": {"door": 1,
@@ -48,9 +56,40 @@ Pass a token using `token` and (if desired) an update source using `update`. Rig
 
 ### Vending Machine
 
-Pass a token using `token` and (if desired) an update source using `update`. Right now the only valid update sources are `tidyhq` and `file`.
+#### Keys
 
-TODO: Sample output
+`/api/v1/keys/vending`
+
+```json
+{
+	"0008564668": {
+		"name": "Test McTestington",
+		"tidyhq": 736850
+	},
+	"0008942641": {
+		"drink": "1234567890ab",
+		"name": "John Smith",
+		"tidyhq": 1234567
+	}
+}
+```
+
+#### Data
+
+`/api/v1/data/door`
+
+```json
+{
+	"1234567890ab": {
+		"name": "Coke",
+		"sugar": true
+	},
+	"cdef12345678": {
+		"name": "Coke Zero",
+		"sugar": false
+	}
+}
+```
 
 ### Response codes
 

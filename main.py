@@ -37,7 +37,7 @@ def pull():
     print("Attempting to refresh keys from TidyHQ...")
     try:
         print("Polling TidyHQ")
-        r = requests.get(config["contacts_url"],params={"access_token":config["tidytoken"]})
+        r = requests.get(config["urls"]["contacts"],params={"access_token":config["tidytoken"]})
         contacts = r.json()
     except requests.exceptions.RequestException as e:
         print("Could not reach TidyHQ")
@@ -52,7 +52,7 @@ def process(zone, contacts=None):
     keys = {}
 
     # Door specifc processing
-    if zone == "door":
+    if zone == "door.keys":
         for person in contacts:
             key = False
             id = ""
@@ -77,7 +77,7 @@ def process(zone, contacts=None):
                     keys[id]["sound"] = door_sound.split(",")
 
     # Vending machine specific processing
-    elif zone == "vending":
+    elif zone == "vending.keys":
         for person in contacts:
             drink = ""
             id = ""
@@ -91,6 +91,25 @@ def process(zone, contacts=None):
                             "tidyhq": person["id"]}
             if drink:
                 keys[id]["drink"] = drink
+    
+    elif zone == "vending.data":
+        # Get drink information
+        print("Attempting to get option data from TidyHQ...")
+        try:
+            print("Polling TidyHQ")
+            r = requests.get(config["urls"]["fields"]+"/"+config["ids"]["drink"],params={"access_token":config["tidytoken"]})
+            d = r.json()
+        except requests.exceptions.RequestException as e:
+            print("Could not reach TidyHQ")
+            return False
+        print("Received response from TidyHQ")
+        drinks = {}
+        for drink in d["choices"]:
+            drinks[drink["id"]] = {"name": drink["title"].strip(),
+                                   "sugar": True}
+            if drink["title"][-1] == " ":
+                drinks[drink["id"]]["sugar"] = False
+        return drinks
 
     # Generic notification and saving
     print("Updated keys for zone:{}, {} keys processed".format(zone,len(keys)))
@@ -100,7 +119,7 @@ def process(zone, contacts=None):
 @app.route('/api/v1/keys/door', methods=['GET'])
 def query_door():
     global data
-    zone="door"
+    zone="door.keys"
     token = request.args.get('token')
     up = request.args.get('update')
     if token not in tokens:
@@ -122,9 +141,33 @@ def query_door():
         return jsonify(data[zone])
 
 @app.route('/api/v1/keys/vending', methods=['GET'])
-def api_id():
+def query_vending():
     global data
-    zone="vending"
+    zone="vending.keys"
+    token = request.args.get('token')
+    up = request.args.get('update')
+    if token not in tokens:
+        return jsonify({'message':'Send a valid token'}), 401
+
+    if up == "tidyhq":
+        k = process(zone=zone)
+        if not k:
+            return jsonify({'message':'Could not reach TidyHQ'}), 502
+        data[zone] = k
+    elif up == "file":
+        data[zone] = backup(zone=zone, mode="r")
+
+    if data[zone]:
+        return jsonify(data[zone])
+    else:
+        print("No keys in cache, pulling from TidyHQ")
+        data[zone] = process(zone=zone)
+        return jsonify(data[zone])
+
+@app.route('/api/v1/data/vending', methods=['GET'])
+def config_vending():
+    global data
+    zone="vending.data"
     token = request.args.get('token')
     up = request.args.get('update')
     if token not in tokens:
@@ -155,11 +198,14 @@ def home():
     return jsonify({'message':"You're good to go!"}), 200
 
 if __name__ == "__main__":
-    zones = ["door", "vending"]
+    zones = ["door.keys", "vending.keys", "vending.data"]
     data = {}
     c = pull()
     for zone in zones:
-        data[zone] = process(zone=zone, contacts=c)
+        if zone[-4:] == "keys":
+            data[zone] = process(zone=zone, contacts=c)
+        else:
+            data[zone] = process(zone=zone)
         if not data[zone]:
             print("Could not pull from TidyHQ, loading file backup")
             data[zone] = backup(zone=zone, mode="r")

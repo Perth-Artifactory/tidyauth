@@ -1,6 +1,7 @@
 {
 	"tidytoken": "TidyHQ authentication token",
-	"contacts_url": "https://api.tidyhq.com/v1/contacts",
+    "urls": {"contacts": "https://api.tidyhq.com/v1/contacts",
+        "fields": "https://api.tidyhq.com/v1//custom_fields"},
 	"tokens": ["List of authentication tokens",
 		"DEMO CLIENT"
 	],
