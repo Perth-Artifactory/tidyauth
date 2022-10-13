@@ -1,7 +1,8 @@
 {
 	"tidytoken": "TidyHQ authentication token",
 	"contacts_url": "https://api.tidyhq.com/v1/contacts",
-	"tokens": ["List of authentication tokens"],
+	"tokens": ["List of authentication tokens",
+			   "DEMO CLIENT"],
 	"server": {"address":"0.0.0.0",
                "port":8080},
 	"ids": {
