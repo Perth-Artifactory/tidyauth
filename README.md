@@ -40,7 +40,12 @@ A response on `/` is included for route testing purposes.
 
 Pass a token using `token` and (if desired) an update source using `update`. Right now the only valid update sources are `tidyhq` and `file`.
 
-TODO: Sample output
+```json
+'{0012345678': {'door': 1,
+                'groups': [],
+                'name': 'Test McTestington',     
+                'tidyhq': 1234567}}
+```
 
 ### Vending Machine
 
