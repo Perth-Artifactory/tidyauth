@@ -9,7 +9,7 @@ This script queries the TidyHQ api for information like access keys.
 ## Configuration
 
 * Copy `config.json.example` to `config.json`
-* Add TidyHQ information, an easy way to get IDs is from `GET /contacts/me`
+* Add TidyHQ information, an easy way to get IDs is from `GET /contacts/me`. Use a trailing space in the name of a drink option to denote sugar free.
 * If you want this endpoint to check tokens set ["server"]["debug"] to `true`. Production instances should set this to `false`
 * Set your tokens. The server will warn you if you've left example tokens in the file.
 
