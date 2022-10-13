@@ -32,8 +32,7 @@ def backup(zone, mode, k=None):
             return True
     return False
 
-def pull_from_tidyhq(zone):
-    
+def pull():
     # Get all contact information from TidyHQ
     print("Attempting to refresh keys from TidyHQ...")
     try:
@@ -44,6 +43,11 @@ def pull_from_tidyhq(zone):
         print("Could not reach TidyHQ")
         return False
     print("Received response from TidyHQ")
+    return contacts
+
+def process(zone, contacts=None):
+    if not contacts:
+        contacts = pull()
 
     keys = {}
 
@@ -103,7 +107,7 @@ def query_door():
         return jsonify({'message':'Send a valid token'}), 401
 
     if up == "tidyhq":
-        k = pull_from_tidyhq(zone=zone)
+        k = process(zone=zone)
         if not k:
             return jsonify({'message':'Could not reach TidyHQ'}), 502
         data[zone] = k
@@ -114,7 +118,7 @@ def query_door():
         return jsonify(data[zone])
     else:
         print("No keys in cache, pulling from TidyHQ")
-        data[zone] = pull_from_tidyhq(zone=zone)
+        data[zone] = process(zone=zone)
         return jsonify(data[zone])
 
 @app.route('/api/v1/keys/vending', methods=['GET'])
@@ -127,7 +131,7 @@ def api_id():
         return jsonify({'message':'Send a valid token'}), 401
 
     if up == "tidyhq":
-        k = pull_from_tidyhq(zone=zone)
+        k = process(zone=zone)
         if not k:
             return jsonify({'message':'Could not reach TidyHQ'}), 502
         data[zone] = k
@@ -138,7 +142,7 @@ def api_id():
         return jsonify(data[zone])
     else:
         print("No keys in cache, pulling from TidyHQ")
-        data[zone] = pull_from_tidyhq(zone=zone)
+        data[zone] = process(zone=zone)
         return jsonify(data[zone])
 
 @app.route('/', methods=['GET'])
@@ -148,8 +152,9 @@ def home():
 if __name__ == "__main__":
     zones = ["door", "vending"]
     data = {}
+    c = pull()
     for zone in zones:
-        data[zone] = pull_from_tidyhq(zone=zone)
+        data[zone] = process(zone=zone, contacts=c)
         if not data[zone]:
             print("Could not pull from TidyHQ, loading file backup")
             data[zone] = backup(zone=zone, mode="r")
