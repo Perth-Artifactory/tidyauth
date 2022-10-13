@@ -15,7 +15,7 @@ This script queries the TidyHQ api for access key information.
 
 ## Running
 
-```bash
+```
 ./main.py
 Attempting to refresh keys from TidyHQ...
 Polling TidyHQ
