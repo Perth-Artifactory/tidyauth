@@ -22,9 +22,6 @@ Polling TidyHQ
 Received response from TidyHQ
 Updated keys for zone:door, 5 keys processed
 5 keys written to backup file: backup.door.json
-Attempting to refresh keys from TidyHQ...
-Polling TidyHQ
-Received response from TidyHQ
 Updated keys for zone:vending, 6 keys processed
 6 keys written to backup file: backup.vending.json
 Auth server starting on 0.0.0.0:8080...
