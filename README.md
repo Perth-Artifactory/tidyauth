@@ -40,10 +40,10 @@ A response on `/` is included for route testing purposes. It will return `200` i
 Pass a token using `token` and (if desired) an update source using `update`. Right now the only valid update sources are `tidyhq` and `file`.
 
 ```json
-{0012345678': {'door': 1,
-                'groups': [],
-                'name': 'Test McTestington',     
-                'tidyhq': 1234567}}
+{"0012345678": {"door": 1,
+                "groups": [],
+                "name": "Test McTestington",     
+                "tidyhq": 1234567}}
 ```
 
 ### Vending Machine
