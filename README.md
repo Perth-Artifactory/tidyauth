@@ -165,5 +165,5 @@ This method will ignore the `update` parameter. It also requires a TidyHQ contac
 ### Response codes
 
 * 200: Completed successfully
-* 401: Invalid token
+* 401: Invalid token or contact ID. Error will be passed as `{"message":"Error"}`
 * 502: Could not reach TidyHQ
