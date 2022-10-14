@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 
-import requests
 import hashlib
+import random
 import time
 from pprint import pprint
-import random
+
+import requests
 
 # Get all cached active door keys
 t = time.time()
