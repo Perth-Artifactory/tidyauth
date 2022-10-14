@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 import hashlib
 import io
 import json
@@ -16,18 +15,16 @@ with open("config.json","r") as f:
 
 # Set up logging
 
-level=logging.INFO
-
 if config["server"]["debug"]:
-    level=logging.DEBUG
+    logging.basicConfig(level=logging.DEBUG)
+else:
+    logging.basicConfig(level=logging.INFO)
 
 if config["slack_webhook"]:
     sh = SlackHandler(config["slack_webhook"])
     sh.setFormatter(SlackFormatter())
-    sh.setLevel(logging.WARNING)
-    logging.basicConfig(level=level, handlers=[sh])
-
-logging.basicConfig(level=level)
+    sh.setLevel(logging.ERROR)
+    logging.getLogger('').addHandler(sh)
 
 tokens = config["tokens"]
 
