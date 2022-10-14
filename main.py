@@ -99,9 +99,10 @@ def process(zone, contacts=None, contact_id=None):
                 "name": "{first_name} {last_name}".format(**person),
                 "tidyhq": person["id"]}
                 if door_sound:
-                    h = fingerprint_sound(url=door_sound, contact_id=person["id"])
-                    if h:
-                        keys[id]["sound"] = h
+                    if door_sound != '/file_values/original/missing.png':
+                        h = fingerprint_sound(url=door_sound, contact_id=person["id"])
+                        if h:
+                            keys[id]["sound"] = h
 
     # Vending machine specific processing
     elif zone == "vending.keys":
@@ -142,7 +143,8 @@ def process(zone, contacts=None, contact_id=None):
             sound = False
             for field in person["custom_fields"]:
                 if field["id"] == config["ids"]["sound"]:
-                    sound = field["value"]
+                    if field["value"] != '/file_values/original/missing.png':
+                        sound = field["value"]
             if sound:
                 return {"url":sound,
                         "hash":fingerprint_sound(url=sound, contact_id=contact_id)}
