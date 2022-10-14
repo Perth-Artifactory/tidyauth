@@ -145,6 +145,7 @@ def process(zone, contacts=None, contact_id=None):
     return keys
 
 def fingerprint_sound(url):
+    filename = url.split("/")[-1]
     r = requests.get(url)
     sound = r.content
     if r.status_code == 200:
@@ -153,10 +154,10 @@ def fingerprint_sound(url):
         except mutagen.mp3.HeaderNotFoundError:
             check = False
         if check:
-            logging.debug(f"File appears to be a valid mp3: {url}")
+            logging.debug(f"{filename} appears to be a valid mp3")
             return hashlib.md5(sound).hexdigest()
         else:
-            logging.error(f"Could not verify uploaded file is a valid mp3: {url}")
+            logging.error(f"Could not verify {filename} is a valid mp3: {url}")
             return False
     else:
         logging.error(f"Couldn't download sound: {url}")
