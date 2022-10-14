@@ -217,6 +217,7 @@ def home():
     return jsonify({'message':"You're good to go!"}), 200
 
 if __name__ == "__main__":
+    logging.info("Starting pre-queries")
     zones = ["door.keys", "vending.keys", "vending.data", "sound.data"]
     data = {}
     c = pull()
