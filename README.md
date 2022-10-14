@@ -15,22 +15,69 @@ This script queries the TidyHQ api for information like access keys.
 
 ## Running
 
+Run `main.py` directly.
+
+Sample outputs when starting the server and running the example client:
+
+### Normal operation
+
 ```
-./main.py
-Attempting to refresh keys from TidyHQ...
-Polling TidyHQ
-Received response from TidyHQ
-Updated keys for zone:door.keys, 5 keys processed
-5 keys written to backup file: backup.door.keys.json
-Updated keys for zone:vending.keys, 6 keys processed
-6 keys written to backup file: backup.vending.keys.json
-Attempting to refresh keys from TidyHQ...
-Polling TidyHQ
-Received response from TidyHQ
-Attempting to get option data from TidyHQ...
-Polling TidyHQ
-Received response from TidyHQ
-Auth server starting on 0.0.0.0:8080...
+WARNING:root:Demo client token active. Do not use in production!
+INFO:waitress:Serving on http://0.0.0.0:8080
+INFO:root:127.0.0.1 using token:<DEMO CLIENT> requested cached data for door.keys
+INFO:root:127.0.0.1 using token:<DEMO CLIENT> requested a pull from TidyHQ for door.keys
+INFO:root:127.0.0.1 using token:<DEMO CLIENT> requested a sound for 1234567
+INFO:root:127.0.0.1 using token:<DEMO CLIENT> requested a pull from TidyHQ for vending.keys
+INFO:root:127.0.0.1 using token:<DEMO CLIENT> requested a pull from TidyHQ for vending.data
+```
+
+### Debug mode
+
+```
+DEBUG:root:Attempting to get contact dump from TidyHQ...
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.tidyhq.com:443
+DEBUG:urllib3.connectionpool:https://api.tidyhq.com:443 "GET /v1/contacts?access_token=TOKEN HTTP/1.1" 200 None
+DEBUG:root:Initial pull for door.keys
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): s3.tidyhq.com:443
+DEBUG:urllib3.connectionpool:https://s3.tidyhq.com:443 "GET SOUND_URL HTTP/1.1" 200 96139
+DEBUG:root:Updated keys for zone:door.keys, 5 keys processed
+DEBUG:root:5 keys written to backup file: backup.door.keys.json
+DEBUG:root:Initial pull for vending.keys
+DEBUG:root:Updated keys for zone:vending.keys, 6 keys processed
+DEBUG:root:6 keys written to backup file: backup.vending.keys.json
+DEBUG:root:Attempting to get option data from TidyHQ...
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.tidyhq.com:443
+DEBUG:urllib3.connectionpool:https://api.tidyhq.com:443 "GET /v1//custom_fields/ID?access_token=TOKEN HTTP/1.1" 200 None
+DEBUG:root:Updated keys for zone:sound.data, 0 keys processed
+DEBUG:root:0 keys written to backup file: backup.sound.data.json
+WARNING:root:Debug mode enabled. Do not use in production!
+WARNING:root:Demo client token active. Do not use in production!
+INFO:waitress:Serving on http://0.0.0.0:8080
+INFO:root:127.0.0.1 using token:<DEMO CLIENT> requested cached data for door.keys
+INFO:root:127.0.0.1 using token:<DEMO CLIENT> requested a pull from TidyHQ for door.keys
+DEBUG:root:Attempting to get contact dump from TidyHQ...
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.tidyhq.com:443
+DEBUG:urllib3.connectionpool:https://api.tidyhq.com:443 "GET /v1/contacts?access_token=TOKEN HTTP/1.1" 200 None
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): s3.tidyhq.com:443
+DEBUG:urllib3.connectionpool:https://s3.tidyhq.com:443 "GET SOUND_URL HTTP/1.1" 200 96139
+DEBUG:root:Updated keys for zone:door.keys, 5 keys processed
+DEBUG:root:5 keys written to backup file: backup.door.keys.json
+DEBUG:root:Attempting to get contact/CONTACT info from TidyHQ...
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.tidyhq.com:443
+DEBUG:urllib3.connectionpool:https://api.tidyhq.com:443 "GET /v1/contacts/CONTACT?access_token=TOKEN HTTP/1.1" 200 None
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): s3.tidyhq.com:443
+DEBUG:urllib3.connectionpool:https://s3.tidyhq.com:443 "GET SOUND URL HTTP/1.1" 200 96139
+INFO:root:127.0.0.1 using token:<DEMO CLIENT> requested a sound for CONTACT
+INFO:root:127.0.0.1 using token:<DEMO CLIENT> requested a pull from TidyHQ for vending.keys
+DEBUG:root:Attempting to get contact dump from TidyHQ...
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.tidyhq.com:443
+DEBUG:urllib3.connectionpool:https://api.tidyhq.com:443 "GET /v1/contacts?access_token=TOKEN HTTP/1.1" 200 None
+DEBUG:root:Updated keys for zone:vending.keys, 6 keys processed
+DEBUG:root:6 keys written to backup file: backup.vending.keys.json
+INFO:root:127.0.0.1 using token:<DEMO CLIENT> requested a pull from TidyHQ for vending.data
+DEBUG:root:Attempting to get option data from TidyHQ...
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.tidyhq.com:443
+DEBUG:urllib3.connectionpool:https://api.tidyhq.com:443 "GET /v1//custom_fields/FIELD?access_token=TOKEN HTTP/1.1" 200 None
 ```
 
 ## Usage
