@@ -7,6 +7,8 @@ import logging
 import flask
 import requests
 from flask import jsonify, request
+import mutagen.mp3
+import io
 
 with open("config.json","r") as f:
     config = json.load(f)
@@ -146,8 +148,18 @@ def fingerprint_sound(url):
     r = requests.get(url)
     sound = r.content
     if r.status_code == 200:
-        return hashlib.md5(sound).hexdigest()
+        try:
+            check = mutagen.mp3.MP3(fileobj=io.BytesIO(r.content))
+        except mutagen.mp3.HeaderNotFoundError:
+            check = False
+        if check:
+            logging.debug(f"File appears to be a valid mp3: {url}")
+            return hashlib.md5(sound).hexdigest()
+        else:
+            logging.error(f"Could not verify uploaded file is a valid mp3: {url}")
+            return False
     else:
+        logging.error(f"Couldn't download sound: {url}")
         return False
 
 @app.route('/api/v1/<type>/<item>', methods=['GET'])

@@ -6,6 +6,10 @@ This script queries the TidyHQ api for information like access keys.
 
 `pip install -r requirements.txt`
 
+* Flask/waitress: Serving content
+* requests: Interacting with TidyHQ API
+* mutagen: MP3 verification
+
 ## Configuration
 
 * Copy `config.json.example` to `config.json`
