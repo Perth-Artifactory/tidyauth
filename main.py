@@ -168,7 +168,7 @@ def send(type,item):
             return jsonify({'message':'Pass a TidyHQ contact id as tidyhq_id'}), 401
         s = process(zone=zone, contact_id=contact_id)
         if s:
-            logging.debug(f"{request.environ['REMOTE_ADDR']} using token:<{token}> requested a sound for {'contact_id'}")
+            logging.info(f"{request.environ['REMOTE_ADDR']} using token:<{token}> requested a sound for {contact_id}")
             return jsonify(s)
         logging.debug(f"{request.environ['REMOTE_ADDR']} using token:<{token}> requested a sound for a contact without one assigned")
         return jsonify({'message':"This contact doesn't have a sound"}), 401
@@ -213,7 +213,7 @@ if __name__ == "__main__":
             data[zone] = process(zone=zone, contacts=c)
         else:
             data[zone] = process(zone=zone)
-        if not data[zone]:
+        if not data[zone] and zone != "sound.data":
             logging.error("Could not pull from TidyHQ, loading file backup")
             data[zone] = backup(zone=zone, mode="r")
         
