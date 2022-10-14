@@ -1,22 +1,33 @@
 #!/usr/bin/python3
 
 import hashlib
+import io
 import json
 import logging
 
 import flask
+import mutagen.mp3
 import requests
 from flask import jsonify, request
-import mutagen.mp3
-import io
+from slack_logger import SlackFormatter, SlackHandler
 
 with open("config.json","r") as f:
     config = json.load(f)
 
+# Set up logging
+
+level=logging.INFO
+
 if config["server"]["debug"]:
-    logging.basicConfig(level=logging.DEBUG)
-else:
-    logging.basicConfig(level=logging.INFO)
+    level=logging.DEBUG
+
+if config["slack_webhook"]:
+    sh = SlackHandler(config["slack_webhook"])
+    sh.setFormatter(SlackFormatter())
+    sh.setLevel(logging.WARNING)
+    logging.basicConfig(level=level, handlers=[sh])
+
+logging.basicConfig(level=level)
 
 tokens = config["tokens"]
 
@@ -91,7 +102,7 @@ def process(zone, contacts=None, contact_id=None):
                 "name": "{first_name} {last_name}".format(**person),
                 "tidyhq": person["id"]}
                 if door_sound:
-                    h = fingerprint_sound(door_sound)
+                    h = fingerprint_sound(url=door_sound, contact_id=person["id"])
                     if h:
                         keys[id]["sound"] = h
 
@@ -137,14 +148,14 @@ def process(zone, contacts=None, contact_id=None):
                     sound = field["value"]
             if sound:
                 return {"url":sound,
-                        "hash":fingerprint_sound(sound)}
+                        "hash":fingerprint_sound(url=sound, contact_id=contact_id)}
         return False
     # Generic notification and saving
     logging.debug(f"Updated keys for zone:{zone}, {len(keys)} keys processed")
     backup(zone=zone, mode="w", k=keys)
     return keys
 
-def fingerprint_sound(url):
+def fingerprint_sound(url,contact_id):
     filename = url.split("/")[-1]
     r = requests.get(url)
     sound = r.content
@@ -157,7 +168,7 @@ def fingerprint_sound(url):
             logging.debug(f"{filename} appears to be a valid mp3")
             return hashlib.md5(sound).hexdigest()
         else:
-            logging.error(f"Could not verify {filename} is a valid mp3: {url}")
+            logging.error(f"Could not verify {filename} is a valid mp3\nDownload: {url}\nContact: {contact_id}")
             return False
     else:
         logging.error(f"Couldn't download sound: {url}")
