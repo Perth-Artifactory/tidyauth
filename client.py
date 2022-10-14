@@ -26,7 +26,6 @@ r = requests.get("http://localhost:8080/api/v1/keys/vending", params={"token":"D
 keys = r.json()
 print(f"Loaded {len(keys)} keys from TidyHQ for vending machine billing")
 print(f"Timing: {round(time.time() - t,3)}s")
-pprint(keys)
 
 # Get drink options from TidyHQ
 # Due to upstream API delays this will take a few seconds
