@@ -27,7 +27,6 @@ for key in keys:
     k = keys[key]
     if "sound" in k.keys():
         contacts_with_sounds.append(k["tidyhq"])
-        pprint(k)
 print(f"Found {len(contacts_with_sounds)} contacts with uploaded sounds")
 
 # Get a sound (if there is one)
@@ -37,7 +36,6 @@ if contacts_with_sounds:
     r = requests.get("http://localhost:8080/api/v1/data/sound", params={"token":"DEMO CLIENT", "tidyhq_id": str(id)})
     if r.status_code == 200:
         d = r.json()
-        pprint(d)
         print(f"TidyHQ contact <{id}> still has a door sound assigned, attempting download")
         r = requests.get(d["url"])
         h = hashlib.md5(r.content).hexdigest()
