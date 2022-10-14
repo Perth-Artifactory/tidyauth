@@ -48,10 +48,34 @@ A response on `/` is included for route testing purposes. It will return `200` i
 `/api/v1/keys/door`
 
 ```json
-{"0012345678": {"door": 1,
-                "groups": [],
-                "name": "Test McTestington",     
-                "tidyhq": 1234567}}
+{
+	"0012345678": {
+		"door": 1,
+		"groups": [],
+		"name": "Test McTestington",
+		"tidyhq": 1234567
+	},
+	"0012345442": {
+		"door": 1,
+		"groups": [],
+		"name": "John Smith",
+		"tidyhq": 8912345,
+		"sound": "cd3d9dd904aca51abc55dbe7b7cc7b28"
+	}
+}
+```
+
+The `sound` keypair is optional and will only be present if a file has been uploaded to the custom field set via the `sound` parameter. It contains an MD5 hash of the uploaded file.
+
+#### Sounds
+
+`/api/v1/data/sound`
+
+This method will ignore the `update` parameter. It also requires a TidyHQ contact id passed with `tidyhq_id`. This ID is found in all `/api/v1/keys` responses. The intention is that a client only needs to download a sound if the hash has changed.
+
+```json
+{"hash": "cd3d9dd904aca51abc55dbe7b7cc7b28",
+ "url": "TIDYHQ URL"}
 ```
 
 ### Vending Machine

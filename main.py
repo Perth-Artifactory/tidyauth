@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import hashlib
 import json
 import logging
 
@@ -40,9 +41,18 @@ def backup(zone, mode, k=None):
             return True
     return False
 
-def pull():
+def pull(contact_id=None):
+    if contact_id:
+        logging.debug(f"Attempting to get contact/{contact_id} info from TidyHQ...")
+        try:
+            r = requests.get(f"{config['urls']['contacts']}/{contact_id}",params={"access_token":config["tidytoken"]})
+            contact = r.json()
+            return contact
+        except requests.exceptions.RequestException as e:
+            logging.error("Could not reach TidyHQ")
+            return False
     # Get all contact information from TidyHQ
-    logging.debug("Attempting to refresh keys from TidyHQ...")
+    logging.debug("Attempting to get contact dump from TidyHQ...")
     try:
         r = requests.get(config["urls"]["contacts"],params={"access_token":config["tidytoken"]})
         contacts = r.json()
@@ -51,7 +61,7 @@ def pull():
         return False
     return contacts
 
-def process(zone, contacts=None):
+def process(zone, contacts=None, contact_id=None):
     if not contacts and zone[-4:] == "keys":
         contacts = pull()
 
@@ -79,8 +89,9 @@ def process(zone, contacts=None):
                 "name": "{first_name} {last_name}".format(**person),
                 "tidyhq": person["id"]}
                 if door_sound:
-                    keys[id]["groups"].append("csound")
-                    keys[id]["sound"] = door_sound.split(",")
+                    h = fingerprint_sound(door_sound)
+                    if h:
+                        keys[id]["sound"] = h
 
     # Vending machine specific processing
     elif zone == "vending.keys":
@@ -115,21 +126,52 @@ def process(zone, contacts=None):
                 drinks[drink["id"]]["sugar"] = False
         return drinks
 
+    elif zone == "sound.data" and contact_id:
+        person = pull(contact_id=contact_id)
+        if person:
+            sound = False
+            for field in person["custom_fields"]:
+                if field["id"] == config["ids"]["sound"]:
+                    sound = field["value"]
+            if sound:
+                return {"url":sound,
+                        "hash":fingerprint_sound(sound)}
+        return False
     # Generic notification and saving
     logging.debug(f"Updated keys for zone:{zone}, {len(keys)} keys processed")
     backup(zone=zone, mode="w", k=keys)
     return keys
 
+def fingerprint_sound(url):
+    r = requests.get(url)
+    sound = r.content
+    if r.status_code == 200:
+        return hashlib.md5(sound).hexdigest()
+    else:
+        return False
+
 @app.route('/api/v1/<type>/<item>', methods=['GET'])
-def config_vending(type,item):
+def send(type,item):
     global data
     zone = f"{item}.{type}"
     if zone not in zones:
         return jsonify({'message':f"{zone} is not a valid zone"}), 401
     token = request.args.get('token')
     up = request.args.get('update')
+    contact_id = request.args.get('tidyhq_id')
     if token not in tokens:
         return jsonify({'message':'Send a valid token'}), 401
+
+    if zone == "sound.data":
+        if not contact_id:
+            logging.debug(f"{request.environ['REMOTE_ADDR']} using token:<{token}> requested a sound without an ID")
+            return jsonify({'message':'Pass a TidyHQ contact id as tidyhq_id'}), 401
+        s = process(zone=zone, contact_id=contact_id)
+        if s:
+            logging.debug(f"{request.environ['REMOTE_ADDR']} using token:<{token}> requested a sound for {'contact_id'}")
+            return jsonify(s)
+        logging.debug(f"{request.environ['REMOTE_ADDR']} using token:<{token}> requested a sound for a contact without one assigned")
+        return jsonify({'message':"This contact doesn't have a sound"}), 401
 
     if up == "tidyhq":
         logging.info(f"{request.environ['REMOTE_ADDR']} using token:<{token}> requested a pull from TidyHQ for {zone}")
@@ -162,7 +204,7 @@ def home():
     return jsonify({'message':"You're good to go!"}), 200
 
 if __name__ == "__main__":
-    zones = ["door.keys", "vending.keys", "vending.data"]
+    zones = ["door.keys", "vending.keys", "vending.data", "sound.data"]
     data = {}
     c = pull()
     for zone in zones:
