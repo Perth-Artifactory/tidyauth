@@ -2,7 +2,7 @@
 
 import json
 
-from util import pull as pull
+import util
 
 try:
     with open("./config.json") as f:
@@ -11,7 +11,5 @@ except FileNotFoundError:
     with open("../config.json") as f:
         config = json.load(f)
 
-contacts = pull(config=config)
+contacts = util.pull(config=config)
 print(f"There are {len(contacts)} contacts in our member database")
-
-
