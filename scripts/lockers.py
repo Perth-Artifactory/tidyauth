@@ -9,7 +9,7 @@ import util
 
 if len(sys.argv) < 2:
     output_format = "json"
-elif sys.argv[1] not in ["json","html"]:
+elif sys.argv[1] not in ["json","html","debug"]:
     output_format = "json"
 else:
     output_format = sys.argv[1]
@@ -30,11 +30,13 @@ for contact in contacts:
         lockers[contact["id"]] = locker
 
 locations = {}
-for locker in lockers:
-    s = ["".join(x) for _, x in itertools.groupby(lockers[locker], key=str.isdigit)]
+for person in lockers:
+    s = ["".join(x) for _, x in itertools.groupby(lockers[person], key=str.isdigit)]
     if s[0] not in locations:
         locations[s[0]] = {}
-    locations[s[0]][s[1]] = locker
+    locations[s[0]][s[1]] = {"contact_id":person,
+                             "name": util.prettyname(contact_id=person, config=config, contacts=contacts),
+                             "membership": util.check_membership(contact_id=person, config=config)}
 
 if output_format == "json":
     pprint(locations)
@@ -43,15 +45,12 @@ elif output_format == "html":
     print("I'm not ready yet!")
     sys.exit(0)
 for location in sorted(locations):
-    print(f"Area: {location}")
     l = 1
     for locker in sorted(locations[location]):
+        data = locations[location][locker]
         lp = int(locker)
         while lp > l+1:
             l += 1
-            print(f"{l:0{len(str(locker))}}: NO DATA")
+            print(f"{location}{l:0{len(str(locker))}}: NO DATA")
         l = int(locker)
-        contact_id = locations[location][locker]
-        name = util.prettyname(contact_id=contact_id, config=config, contacts=contacts)
-        member_status = util.check_membership(contact_id=locations[location][locker], config=config)
-        print(f"{locker}: {name} ({contact_id}) - Member: {member_status}")
+        print(f'{location}{locker}: {data["name"]} ({data["contact_id"]}) - Member: {data["membership"]}')
