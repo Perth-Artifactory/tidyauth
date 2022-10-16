@@ -16,6 +16,7 @@
 		"tag": "Custom field ID for tag ID",
 		"sound": "Custom field ID for tag sound",
 		"enabled": "Custom value ID for enabled key",
-		"drink": "Custom value ID for preferred drink"
+		"drink": "Custom value ID for preferred drink",
+		"locker": "Custom value ID for locker assignment"
 	}
 }
