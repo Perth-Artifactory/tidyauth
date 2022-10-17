@@ -1,6 +1,6 @@
-# TidyHQ key authentication wrapper
+# TidyHQ wrapper
 
-This script queries the TidyHQ api for information like access keys.
+This repository contains a server designed to serve cached and live TidyHQ data for use in other tools. It also contains a series of report [generation scripts](/scripts/README.md) that are intended to be run periodically via cron and then disseminated using external resources.
 
 ## Installation
 
@@ -15,8 +15,8 @@ This script queries the TidyHQ api for information like access keys.
 
 * Copy `config.json.example` to `config.json`
 * Add TidyHQ information, an easy way to get IDs is from `GET /contacts/me`. Use a trailing space in the name of a drink option to denote sugar free.
-* If you want this endpoint to check tokens set ["server"]["debug"] to `true`. Production instances should set this to `false`
-* Set your tokens. The server will warn you if you've left example tokens in the file.
+* Set ["server"]["debug"] to `true` if the server does something you don't expect. Production instances should set this to `false`
+* Set your auth tokens. The server will warn you if you've left example tokens in the file.
 
 ## Running
 
