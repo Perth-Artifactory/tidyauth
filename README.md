@@ -167,7 +167,17 @@ This method will ignore the `update` parameter. It also requires a TidyHQ contac
 }
 ```
 
-### Response codes
+### Lockers
+
+`/api/v1/data/locker`
+
+This method will ignore the `update` parameter. It also requires a TidyHQ contact id passed with `tidyhq_id`. This ID is found in all `/api/v1/keys` responses.
+
+```json
+{"locker": "B01"}
+```
+
+## Response codes
 
 * 200: Completed successfully
 * 401: Invalid token or contact ID. Error will be passed as `{"message":"Error"}`

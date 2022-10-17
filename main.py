@@ -119,6 +119,15 @@ def process(zone: str, contacts: list =None, contact_id: str =None):
                 return {"url":sound,
                         "hash":fingerprint_sound(url=sound, contact_id=contact_id)}
         return False
+
+    elif zone == "locker.data" and contact_id:
+        person = util.pull(contact_id=contact_id, config=config)
+        if person:
+            locker = util.find(contact=person, field_id = config["ids"]["locker"])
+            if locker:
+                return {"locker":locker}
+        return False
+
     # Generic notification and saving
     logging.debug(f"Updated keys for zone:{zone}, {len(keys)} keys processed")
     backup(zone=zone, mode="w", k=keys)
@@ -155,7 +164,7 @@ def send(type,item):
     if token not in tokens:
         return jsonify({'message':'Send a valid token'}), 401
 
-    if zone == "sound.data":
+    if zone == ["sound.data","locker.data"]:
         if not contact_id:
             logging.debug(f"{request.environ['REMOTE_ADDR']} using token:<{token}> requested a sound without an ID")
             return jsonify({'message':'Pass a TidyHQ contact id as tidyhq_id'}), 401
@@ -198,7 +207,7 @@ def home():
 
 if __name__ == "__main__":
     logging.info("Starting pre-queries")
-    zones = ["door.keys", "vending.keys", "vending.data", "sound.data"]
+    zones = ["door.keys", "vending.keys", "vending.data", "sound.data", "locker.data"]
     data = {}
     c = util.pull(config=config)
     for zone in zones:
