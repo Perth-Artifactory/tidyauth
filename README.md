@@ -8,6 +8,7 @@ This repository contains a server designed to serve cached and live TidyHQ data 
 
 * Flask/waitress: Serving content
 * mutagen: MP3 verification
+* phonenumbers: Phone number verification
 * requests: Interacting with TidyHQ API
 * slack-logger: Slack webhook support for logging
 
