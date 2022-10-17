@@ -20,6 +20,20 @@ locker.py mrkdwn > report.md
 locker.py json | script.py
 ```
 
+Returns a sorted report of locker allocations in various formats. If two people are assigned the same locker the person with the higher TidyHQ contact ID will be listed. (Joined later)
+
+### Emergency contact validity
+
+```bash
+audit_emergency.py [json|html|mrkdwn|string]
+
+audit_emergency.py html > report.html
+audit_emergency.py mrkdwn > report.md
+audit_emergency.py json | script.py
+```
+
+Returns a report on emergency contacts with basic problems (Missing/invalid number, their own number etc). The report is limited to contacts with at least one membership not marked as expired.
+
 ## Utilities
 
 ### Contact retrieval
