@@ -9,9 +9,9 @@ from pprint import pprint
 import util
 
 if len(sys.argv) < 2:
-    output_format = "json"
+    output_format = "string"
 elif sys.argv[1] not in ["json","html","mrkdwn","string"]:
-    output_format = "json"
+    output_format = "string"
 else:
     output_format = sys.argv[1]
 
