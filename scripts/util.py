@@ -68,3 +68,62 @@ def prettyname(contact_id, config, contacts=None):
             s += f' ({contact["nick_name"]})'
         return s
     return False
+
+def report_formatter(data,dtype="html"):
+    html = ""
+    mrkdwn = ""
+
+    for section in data:
+        # Section title
+        html += f'<h2>{section["title"]}</h2>\n'
+        mrkdwn += f'## {section["title"]}\n'
+
+        # Explainer paragraph
+        html += f'<p>{section["explainer"]}</p>\n'
+        mrkdwn += f'{section["explainer"]}\n'
+
+        # Table head
+        html += '<table class="table">\n<thead>\n<tr>\n'
+        for h in section["table"][0]:
+            html += f'<th scope="col">{h}</th>\n'
+        html += '</tr>\n</thead>\n<tbody>\n'
+        mrkdwn += f'\n|{" | ".join(section["table"][0])}|\n'
+        mrkdwn += '|' + '-|' * len(section["table"][0]) + "\n"
+
+        # Table body
+        for line in section["table"][1:]:
+            html += '<tr>\n'
+            for item in line:
+                html += f'<td>{item}</td>\n'
+            html += '</tr>\n'
+            mrkdwn += f'|{" | ".join(line)}|\n'
+        html += '</tbody>\n</table>\n'
+
+        # Only add a page break if we have multiple sections
+        if len(data) > 1:
+            html += "<hr>\n"
+            mrkdwn += "---\n"
+
+
+    if dtype == "mrkdwn":
+        return mrkdwn
+    elif dtype == "html":
+        try:
+            with open("report_template.html","r") as f:
+                html_wrapper = f.read()
+        except FileNotFoundError:
+            with open("./scripts/report_template.html","r") as f:
+                html_wrapper = f.read()
+        return html_wrapper.format(html)
+
+
+        
+
+
+
+
+
+
+    
+  
+    
