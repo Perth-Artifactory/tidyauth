@@ -3,12 +3,15 @@ import hashlib
 import io
 import json
 import logging
+from typing import Dict, List, Tuple
 
 import flask
 import mutagen.mp3
 import requests
 from flask import jsonify, request
 from slack_logger import SlackFormatter, SlackHandler
+
+import scripts.util as util
 
 with open("config.json","r") as f:
     config = json.load(f)
@@ -30,7 +33,7 @@ tokens = config["tokens"]
 
 app = flask.Flask(__name__)
 
-def backup(zone, mode, k=None):
+def backup(zone: str, mode: str, k=None):
     if mode == "r":
         with open("backup.{}.json".format(zone), mode) as f:
             logging.debug("Loading keys from file cache...")
@@ -51,49 +54,23 @@ def backup(zone, mode, k=None):
             return True
     return False
 
-def pull(contact_id=None):
-    if contact_id:
-        logging.debug(f"Attempting to get contact/{contact_id} info from TidyHQ...")
-        try:
-            r = requests.get(f"{config['urls']['contacts']}/{contact_id}",params={"access_token":config["tidytoken"]})
-            if r.status_code == 200:
-                contact = r.json()
-                return contact
-            return False
-        except requests.exceptions.RequestException as e:
-            logging.error("Could not reach TidyHQ")
-            return False
-    # Get all contact information from TidyHQ
-    logging.debug("Attempting to get contact dump from TidyHQ...")
-    try:
-        r = requests.get(config["urls"]["contacts"],params={"access_token":config["tidytoken"]})
-        contacts = r.json()
-    except requests.exceptions.RequestException as e:
-        logging.error("Could not reach TidyHQ")
-        return False
-    return contacts
-
-def process(zone, contacts=None, contact_id=None):
+def process(zone: str, contacts: list =None, contact_id: str =None):
     if not contacts and zone[-4:] == "keys":
-        contacts = pull()
+        contacts = util.pull(config=config)
 
     keys = {}
 
     # Door specifc processing
     if zone == "door.keys":
         for person in contacts:
+            id = util.find(contact=person, field_id = config["ids"]["tag"])
+            door_sound = util.find(contact=person, field_id = config["ids"]["sound"])
+            k = util.find(contact=person, field_id = config["ids"]["status"])
             key = False
-            id = ""
-            door_sound = ""
-            for field in person["custom_fields"]:
-                if field["id"] == config["ids"]["status"]:
-                    for value in field["value"]:
-                        if value["id"] == config["ids"]["enabled"]:
-                            key = True
-                elif field["id"] == config["ids"]["tag"]:
-                    id = field["value"]
-                elif field["id"] == config["ids"]["sound"]:
-                    door_sound = field["value"]
+            if k:
+                for value in k:
+                    if value["id"] == config["ids"]["enabled"]:
+                        key = True
             if key and id:
                 keys[id] = {
                 "door": 1,
@@ -109,13 +86,8 @@ def process(zone, contacts=None, contact_id=None):
     # Vending machine specific processing
     elif zone == "vending.keys":
         for person in contacts:
-            drink = ""
-            id = ""
-            for field in person["custom_fields"]:
-                if field["id"] == config["ids"]["tag"]:
-                    id = field["value"]
-                elif field["id"] == config["ids"]["drink"]:
-                    drink = field["value"]["id"]
+            drink = util.find(contact=person, field_id = config["ids"]["drink"])
+            id = util.find(contact=person, field_id = config["ids"]["tag"])
             if id:
                 keys[id] = {"name": "{first_name} {last_name}".format(**person),
                             "tidyhq": person["id"]}
@@ -140,13 +112,9 @@ def process(zone, contacts=None, contact_id=None):
         return drinks
 
     elif zone == "sound.data" and contact_id:
-        person = pull(contact_id=contact_id)
+        person = util.pull(contact_id=contact_id, config=config)
         if person:
-            sound = False
-            for field in person["custom_fields"]:
-                if field["id"] == config["ids"]["sound"]:
-                    if field["value"] != '/file_values/original/missing.png':
-                        sound = field["value"]
+            sound = util.find(contact=person, field_id = config["ids"]["sound"])
             if sound:
                 return {"url":sound,
                         "hash":fingerprint_sound(url=sound, contact_id=contact_id)}
@@ -156,7 +124,7 @@ def process(zone, contacts=None, contact_id=None):
     backup(zone=zone, mode="w", k=keys)
     return keys
 
-def fingerprint_sound(url,contact_id):
+def fingerprint_sound(url: str, contact_id: str) -> str:
     filename = url.split("/")[-1]
     r = requests.get(url)
     sound = r.content
@@ -232,7 +200,7 @@ if __name__ == "__main__":
     logging.info("Starting pre-queries")
     zones = ["door.keys", "vending.keys", "vending.data", "sound.data"]
     data = {}
-    c = pull()
+    c = util.pull(config=config)
     for zone in zones:
         if zone[-4:] == "keys":
             logging.debug(f"Initial pull for {zone}")
