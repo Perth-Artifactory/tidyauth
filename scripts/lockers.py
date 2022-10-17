@@ -8,7 +8,13 @@ from pprint import pprint
 
 import util
 
-if len(sys.argv) < 2:
+def chain():
+    global s
+    return s
+
+if __name__ != "__main__":
+    output_format = "internal"
+elif len(sys.argv) < 2:
     output_format = "string"
 elif sys.argv[1] not in ["json","html","mrkdwn","string"]:
     output_format = "string"
@@ -42,7 +48,7 @@ for person in lockers:
 if output_format == "json":
     pprint(locations)
     sys.exit(0)
-elif output_format in ["html", "mrkdwn"]:
+elif output_format in ["html", "mrkdwn","internal"]:
     d = [["Locker #", "Name", "TidyHQ", "Membership status"]]
     for location in sorted(locations):
         l = 1
@@ -54,10 +60,11 @@ elif output_format in ["html", "mrkdwn"]:
                 d.append([f"{location}{l:0{len(str(locker))}}", "NO DATA"])
             l = int(locker)
             d.append([f'{location}{locker}', data["name"], data["contact_id"], data["membership"]])
-    s = [{"title":"Locker allocations",
+    s = {"title":"Locker allocations",
          "explainer": f"This table has been generated from data stored in TidyHQ. It was retrieved at: {datetime.now()}",
-         "table": d}]
-    print(util.report_formatter(data=s, dtype=output_format))
+         "table": d}
+    if output_format != "internal":
+        print(util.report_formatter(data=[s], dtype=output_format))
 
 elif output_format == "string":
     for location in sorted(locations):

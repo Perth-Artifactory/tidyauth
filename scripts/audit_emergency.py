@@ -23,6 +23,10 @@ def check_num(num):
         return False
     return False
 
+def chain():
+    global s
+    return s
+
 try:
     with open("./config.json") as f:
         config = json.load(f)
@@ -30,7 +34,9 @@ except FileNotFoundError:
     with open("../config.json") as f:
         config = json.load(f)
 
-if len(sys.argv) < 2:
+if __name__ != "__main__":
+    output_format = "internal"
+elif len(sys.argv) < 2:
     output_format = "string"
 elif sys.argv[1] not in ["json","html","mrkdwn","string"]:
     output_format = "string"
@@ -71,11 +77,12 @@ for membership in memberships:
 if len(d) > 1:
     if output_format == "json":
         pprint(d[1:])
-    elif output_format in ["html","mrkdwn"]:
+    elif output_format in ["html","mrkdwn","internal"]:
         s = [{"title":"Invalid emergency contact data",
               "explainer": f"This table has been generated from data stored in TidyHQ. It only includes contacts with memberships not marked as expired. It was retrieved at: {datetime.now()}",
               "table": d}]
-        print(util.report_formatter(data = s, dtype = output_format))
+        if output_format != "internal":
+            print(util.report_formatter(data = s, dtype = output_format))
     elif output_format == "string":
         for person in d[1:]:
             print(person[0])
