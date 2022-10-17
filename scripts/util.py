@@ -8,8 +8,10 @@ def pull(contact_id: str =None, config: dict =None):
         logging.debug(f"Attempting to get contact/{contact_id} info from TidyHQ...")
         try:
             r = requests.get(f"{config['urls']['contacts']}/{contact_id}",params={"access_token":config["tidytoken"]})
-            contact = r.json()
-            return contact
+            if r.status_code == 200:
+                contact = r.json()
+                return contact
+            return False
         except requests.exceptions.RequestException as e:
             logging.error("Could not reach TidyHQ")
             return False
