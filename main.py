@@ -3,6 +3,7 @@ import hashlib
 import io
 import json
 import logging
+from typing import Dict, List, Tuple
 
 import flask
 import mutagen.mp3
@@ -32,7 +33,7 @@ tokens = config["tokens"]
 
 app = flask.Flask(__name__)
 
-def backup(zone, mode, k=None):
+def backup(zone: str, mode: str, k=None):
     if mode == "r":
         with open("backup.{}.json".format(zone), mode) as f:
             logging.debug("Loading keys from file cache...")
@@ -53,7 +54,7 @@ def backup(zone, mode, k=None):
             return True
     return False
 
-def process(zone, contacts=None, contact_id=None):
+def process(zone: str, contacts: list =None, contact_id: str =None):
     if not contacts and zone[-4:] == "keys":
         contacts = util.pull(config=config)
 
@@ -123,7 +124,7 @@ def process(zone, contacts=None, contact_id=None):
     backup(zone=zone, mode="w", k=keys)
     return keys
 
-def fingerprint_sound(url,contact_id):
+def fingerprint_sound(url: str, contact_id: str) -> str:
     filename = url.split("/")[-1]
     r = requests.get(url)
     sound = r.content

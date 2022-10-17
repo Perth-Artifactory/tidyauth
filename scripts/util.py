@@ -1,8 +1,9 @@
 from datetime import datetime
 import requests
 import logging
+from typing import Dict, List, Tuple
 
-def pull(contact_id=None, config=None):
+def pull(contact_id: str =None, config: dict =None):
     if contact_id:
         logging.debug(f"Attempting to get contact/{contact_id} info from TidyHQ...")
         try:
@@ -22,14 +23,14 @@ def pull(contact_id=None, config=None):
         return False
     return contacts
 
-def find(contact, field_id):
+def find(contact: dict, field_id: str):
     for field in contact["custom_fields"]:
         if field["id"] == field_id:
             if field["value"] != '/file_values/original/missing.png':
                 return field["value"]
     return False
 
-def check_membership(contact_id=None, config=None):
+def check_membership(contact_id: str = None, config: dict = None) -> bool:
     logging.debug(f"Attempting to get contact/{contact_id} info from TidyHQ...")
     try:
         r = requests.get(f"{config['urls']['contacts']}/{contact_id}/memberships",params={"access_token":config["tidytoken"]})
@@ -54,7 +55,7 @@ def check_membership(contact_id=None, config=None):
     else:
         return False
 
-def prettyname(contact_id, config, contacts=None):
+def prettyname(contact_id: str, config: dict, contacts:list = None) -> str:
     if not contacts:
         contact = pull(contact_id = contact_id, config = config)
         return "{first_name} {last_name} ({nick_name})".format(**contact)
@@ -67,9 +68,9 @@ def prettyname(contact_id, config, contacts=None):
         if contact["nick_name"]:
             s += f' ({contact["nick_name"]})'
         return s
-    return False
+    return ""
 
-def report_formatter(data,dtype="html"):
+def report_formatter(data: List[dict],dtype: str) -> str:
     html = ""
     mrkdwn = ""
 
