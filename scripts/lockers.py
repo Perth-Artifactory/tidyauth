@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from datetime import datetime
 import itertools
 import json
 import sys
@@ -9,7 +10,7 @@ import util
 
 if len(sys.argv) < 2:
     output_format = "json"
-elif sys.argv[1] not in ["json","html","debug"]:
+elif sys.argv[1] not in ["json","html","mrkdwn"]:
     output_format = "json"
 else:
     output_format = sys.argv[1]
@@ -41,16 +42,31 @@ for person in lockers:
 if output_format == "json":
     pprint(locations)
     sys.exit(0)
-elif output_format == "html":
-    print("I'm not ready yet!")
-    sys.exit(0)
-for location in sorted(locations):
-    l = 1
-    for locker in sorted(locations[location]):
-        data = locations[location][locker]
-        lp = int(locker)
-        while lp > l+1:
-            l += 1
-            print(f"{location}{l:0{len(str(locker))}}: NO DATA")
-        l = int(locker)
-        print(f'{location}{locker}: {data["name"]} ({data["contact_id"]}) - Member: {data["membership"]}')
+elif output_format in ["html", "mrkdwn"]:
+    d = [["Locker #", "Name", "TidyHQ", "Membership status"]]
+    for location in sorted(locations):
+        l = 1
+        for locker in sorted(locations[location]):
+            data = locations[location][locker]
+            lp = int(locker)
+            while lp > l+1:
+                l += 1
+                d.append([f"{location}{l:0{len(str(locker))}}", "NO DATA"])
+            l = int(locker)
+            d.append([f'{location}{locker}', data["name"], str(data["contact_id"]), str(data["membership"])])
+    s = [{"title":"Locker allocations",
+         "explainer": f"This table has been generated from data stored in TidyHQ. It was retrieved at: {datetime.now()}",
+         "table": d}]
+    print(util.report_formatter(data=s, dtype=output_format))
+
+elif output_format == "string":
+    for location in sorted(locations):
+        l = 1
+        for locker in sorted(locations[location]):
+            data = locations[location][locker]
+            lp = int(locker)
+            while lp > l+1:
+                l += 1
+                print(f"{location}{l:0{len(str(locker))}}: NO DATA")
+            l = int(locker)
+            print(f'{location}{locker}: {data["name"]} ({data["contact_id"]}) - Member: {data["membership"]}')
