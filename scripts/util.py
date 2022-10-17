@@ -55,7 +55,7 @@ def check_membership(contact_id: str = None, config: dict = None) -> bool:
     else:
         return False
 
-def prettyname(contact_id: str, config: dict, contacts:list = None) -> str:
+def prettyname(contact_id: str, config: dict = None, contacts:list = None) -> str:
     if not contacts:
         contact = pull(contact_id = contact_id, config = config)
         return "{first_name} {last_name} ({nick_name})".format(**contact)
