@@ -1,9 +1,9 @@
 from datetime import datetime
 import requests
 import logging
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union
 
-def pull(contact_id: str =None, config: dict =None):
+def pull(contact_id: str =None, config: dict =None, restructured: bool =False) -> Union[list,dict]:
     if contact_id:
         logging.debug(f"Attempting to get contact/{contact_id} info from TidyHQ...")
         try:
@@ -23,6 +23,11 @@ def pull(contact_id: str =None, config: dict =None):
     except requests.exceptions.RequestException as e:
         logging.error("Could not reach TidyHQ")
         return False
+    if restructured:
+        c = {}
+        for contact in contacts:
+            c[contact['id']] = contact
+        return c
     return contacts
 
 def find(contact: dict, field_id: str):
@@ -61,10 +66,16 @@ def prettyname(contact_id: str, config: dict = None, contacts:list = None) -> st
     if not contacts:
         contact = pull(contact_id = contact_id, config = config)
         return "{first_name} {last_name} ({nick_name})".format(**contact)
-    contact = False
-    for c in contacts:
-        if str(c["id"]) == str(contact_id):
-            contact = c
+    elif type(contacts) == dict:
+        if int(contact_id) in contacts.keys():
+            contact = contacts[int(contact_id)]
+        else:
+            contact = False
+    elif type(contacts) == list:
+        contact = False
+        for c in contacts:
+            if str(c["id"]) == str(contact_id):
+                contact = c
     if contact:
         s = f'{contact["first_name"]} {contact["last_name"]}'
         if contact["nick_name"]:
@@ -106,7 +117,6 @@ def report_formatter(data: List[dict],dtype: str) -> str:
         if len(data) > 1:
             html += "<hr>\n"
             mrkdwn += "---\n"
-
 
     if dtype == "mrkdwn":
         return mrkdwn
