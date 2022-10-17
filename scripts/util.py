@@ -106,11 +106,13 @@ def report_formatter(data: List[dict],dtype: str) -> str:
 
         # Table body
         for line in section["table"][1:]:
+            hline = [str(i).replace("\n","<br/>") for i in line]
+            mline = [str(i).replace("\n",", ") for i in line]
             html += '<tr>\n'
-            for item in line:
+            for item in hline:
                 html += f'<td>{item}</td>\n'
             html += '</tr>\n'
-            mrkdwn += f'|{" | ".join(line)}|\n'
+            mrkdwn += f'|{" | ".join(mline)}|\n'
         html += '</tbody>\n</table>\n'
 
         # Only add a page break if we have multiple sections

@@ -53,7 +53,7 @@ elif output_format in ["html", "mrkdwn"]:
                 l += 1
                 d.append([f"{location}{l:0{len(str(locker))}}", "NO DATA"])
             l = int(locker)
-            d.append([f'{location}{locker}', data["name"], str(data["contact_id"]), str(data["membership"])])
+            d.append([f'{location}{locker}', data["name"], data["contact_id"], data["membership"]])
     s = [{"title":"Locker allocations",
          "explainer": f"This table has been generated from data stored in TidyHQ. It was retrieved at: {datetime.now()}",
          "table": d}]
