@@ -10,7 +10,7 @@ import util
 
 if len(sys.argv) < 2:
     output_format = "json"
-elif sys.argv[1] not in ["json","html","mrkdwn"]:
+elif sys.argv[1] not in ["json","html","mrkdwn","string"]:
     output_format = "json"
 else:
     output_format = sys.argv[1]
