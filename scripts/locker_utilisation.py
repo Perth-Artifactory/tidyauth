@@ -30,6 +30,9 @@ except FileNotFoundError:
 
 contacts = util.pull(config=config)
 
+if not contacts:
+    sys.exit(1)
+
 lockers = {}
 for contact in contacts:
     locker = util.find(contact=contact, field_id=config["ids"]["locker"])
@@ -41,39 +44,45 @@ for person in lockers:
     s = ["".join(x) for _, x in itertools.groupby(lockers[person], key=str.isdigit)]
     if s[0] not in locations:
         locations[s[0]] = {}
-    locations[s[0]][s[1]] = {"contact_id":person,
-                             "name": util.prettyname(contact_id=person, config=config, contacts=contacts),
-                             "membership": util.check_membership(contact_id=person, config=config)}
+    locations[s[0]][s[1]] = {"membership": util.check_membership(contact_id=person, config=config)}
+
+counts = {"Active members":0,
+          "Expired members": 0,
+          "Blank": 0}
+for location in sorted(locations):
+    l = 1
+    for locker in sorted(locations[location]):
+        data = locations[location][locker]
+        lp = int(locker)
+        while lp > l+1:
+            l += 1
+            counts["Blank"] += 1
+        l = int(locker)
+        if data["membership"]:
+            counts["Active members"] += 1
+        else:
+            counts["Expired members"] += 1
+
+t = 0
+for c in counts: t += counts[c]
+counts["Total"] = t
 
 if output_format == "json":
-    pprint(locations)
+    pprint(counts)
     sys.exit(0)
 elif output_format in ["html", "mrkdwn","internal"]:
-    d = [["Locker #", "Name", "TidyHQ", "Membership status"]]
-    for location in sorted(locations):
-        l = 1
-        for locker in sorted(locations[location]):
-            data = locations[location][locker]
-            lp = int(locker)
-            while lp > l+1:
-                l += 1
-                d.append([f"{location}{l:0{len(str(locker))}}", "NO DATA"])
-            l = int(locker)
-            d.append([f'{location}{locker}', data["name"], data["contact_id"], data["membership"]])
-    s = {"title":"Locker allocations",
+    d = [["Type", "#", "%"]]
+    for c in counts:
+        d.append([c, counts[c], f'{round(counts[c] / counts["Total"]*100)}%'])  # type: ignore
+        if c == "Total":
+            d[-1].pop()
+
+    s = {"title":"Locker utilisation",
          "explainer": f"This table has been generated from data stored in TidyHQ. It was retrieved at: {datetime.now()}",
          "table": d}
     if output_format != "internal":
         print(util.report_formatter(data=[s], dtype=output_format))
 
 elif output_format == "string":
-    for location in sorted(locations):
-        l = 1
-        for locker in sorted(locations[location]):
-            data = locations[location][locker]
-            lp = int(locker)
-            while lp > l+1:
-                l += 1
-                print(f"{location}{l:0{len(str(locker))}}: NO DATA")
-            l = int(locker)
-            print(f'{location}{locker}: {data["name"]} ({data["contact_id"]}) - Member: {data["membership"]}')
+    for c in counts:
+        print(c, counts[c], f'{round(counts[c] / counts["Total"]*100)}%')
