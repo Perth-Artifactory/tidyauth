@@ -3,7 +3,7 @@ import requests
 import logging
 from typing import Dict, List, Tuple, Union
 
-def pull(contact_id: str =None, config: dict =None, restructured: bool =False) -> Union[list,dict]:
+def pull(contact_id: str ="", config: dict ={}, restructured: bool =False):
     if contact_id:
         logging.debug(f"Attempting to get contact/{contact_id} info from TidyHQ...")
         try:
@@ -37,7 +37,7 @@ def find(contact: dict, field_id: str):
                 return field["value"]
     return False
 
-def check_membership(contact_id: str = None, config: dict = None) -> bool:
+def check_membership(contact_id: str = "", config: dict = {}) -> bool:
     logging.debug(f"Attempting to get contact/{contact_id} info from TidyHQ...")
     try:
         r = requests.get(f"{config['urls']['contacts']}/{contact_id}/memberships",params={"access_token":config["tidytoken"]})
@@ -62,17 +62,16 @@ def check_membership(contact_id: str = None, config: dict = None) -> bool:
     else:
         return False
 
-def prettyname(contact_id: str, config: dict = None, contacts:list = None) -> str:
+def prettyname(contact_id: str, config: dict = {}, contacts:Union[list,dict] = []) -> str:
+    contact = False
     if not contacts:
         contact = pull(contact_id = contact_id, config = config)
-        return "{first_name} {last_name} ({nick_name})".format(**contact)
+        if contact:
+            return "{first_name} {last_name} ({nick_name})".format(**contact)
     elif type(contacts) == dict:
-        if int(contact_id) in contacts.keys():
+        if int(contact_id) in contacts.keys():  # type: ignore
             contact = contacts[int(contact_id)]
-        else:
-            contact = False
     elif type(contacts) == list:
-        contact = False
         for c in contacts:
             if str(c["id"]) == str(contact_id):
                 contact = c
@@ -130,6 +129,7 @@ def report_formatter(data: List[dict],dtype: str) -> str:
             with open("./scripts/report_template.html","r") as f:
                 html_wrapper = f.read()
         return html_wrapper.format(html)
+    return ""
 
 
         
