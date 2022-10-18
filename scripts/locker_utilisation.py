@@ -1,12 +1,13 @@
 #!/usr/bin/python3
 
-from datetime import datetime
 import itertools
 import json
 import sys
+from datetime import datetime
 from pprint import pprint
 
 import util
+
 
 def chain():
     global s

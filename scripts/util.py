@@ -1,7 +1,9 @@
-from datetime import datetime
-import requests
 import logging
+from datetime import datetime
 from typing import Dict, List, Tuple, Union
+
+import requests
+
 
 def pull(contact_id: str ="", config: dict ={}, restructured: bool =False):
     if contact_id:

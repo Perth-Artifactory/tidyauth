@@ -1,14 +1,15 @@
 #!/usr/bin/python3
 
-from datetime import datetime
 import itertools
 import json
-import sys
-import requests
 import logging
+import sys
+from datetime import datetime
 from pprint import pprint
 
+import requests
 import util
+
 
 def chain():
     global s

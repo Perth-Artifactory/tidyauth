@@ -52,10 +52,13 @@ except requests.exceptions.RequestException as e:
 
 contacts = util.pull(config=config, restructured=True)
 
+if type(contacts) != dict:
+    sys.exit(1)
+
 d = [["Name","Emergency Contact Person","Emergency Contact #","Problem"]]
 for membership in memberships:
     if membership["state"] != "expired":
-        contact = contacts[membership["contact_id"]]
+        contact = contacts[membership["contact_id"]]  # type: ignore
         problems = []
         if contact["emergency_contact_person"] == None:
             problems.append("Emergency contact name missing")
@@ -70,7 +73,7 @@ for membership in memberships:
             problems.append("Emergency number is not a valid number")
 
         if problems:
-            d.append([util.prettyname(contact_id = membership["contact_id"], contacts=contacts),
+            d.append([util.prettyname(contact_id = membership["contact_id"], contacts=contacts),  # type: ignore
                       str(contact["emergency_contact_person"]),
                       str(contact["emergency_contact_number"]),
                       "\n".join(problems)])
