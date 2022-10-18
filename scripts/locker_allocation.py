@@ -64,11 +64,11 @@ elif output_format in ["html", "mrkdwn","internal"]:
                 d.append([f"{location}{l:0{len(str(locker))}}", "NO DATA"])
             l = int(locker)
             d.append([f'{location}{locker}', data["name"], data["contact_id"], data["membership"]])
-    s = {"title":"Locker allocations",
+    s = [{"title":"Locker allocations",
          "explainer": f"This table has been generated from data stored in TidyHQ. It was retrieved at: {datetime.now()}",
-         "table": d}
+         "table": d}]
     if output_format != "internal":
-        print(util.report_formatter(data=[s], dtype=output_format))
+        print(util.report_formatter(data=s, dtype=output_format))
 
 elif output_format == "string":
     for location in sorted(locations):

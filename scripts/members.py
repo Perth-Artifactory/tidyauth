@@ -73,11 +73,11 @@ elif output_format in ["html", "mrkdwn","internal"]:
         m = m[1]
         d.append([m["name"], m["count"], f'{round(m["count"] / total_memberships*100)}%'])  # type: ignore
     d.append(["Total", total_memberships])  # type: ignore
-    s = {"title":"Membership stats",
+    s = [{"title":"Membership stats",
          "explainer": f"This table has been generated from data stored in TidyHQ. It was retrieved at: {datetime.now()}",
-         "table": d}
+         "table": d}]
     if output_format != "internal":
-        print(util.report_formatter(data=[s], dtype=output_format))
+        print(util.report_formatter(data=s, dtype=output_format))
 
 elif output_format == "string":
     for m in membership_levels:

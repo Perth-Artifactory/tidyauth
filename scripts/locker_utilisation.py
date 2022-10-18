@@ -78,11 +78,11 @@ elif output_format in ["html", "mrkdwn","internal"]:
         if c == "Total":
             d[-1].pop()
 
-    s = {"title":"Locker utilisation",
+    s = [{"title":"Locker utilisation",
          "explainer": f"This table has been generated from data stored in TidyHQ. It was retrieved at: {datetime.now()}",
-         "table": d}
+         "table": d}]
     if output_format != "internal":
-        print(util.report_formatter(data=[s], dtype=output_format))
+        print(util.report_formatter(data=s, dtype=output_format))
 
 elif output_format == "string":
     for c in counts:
