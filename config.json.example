@@ -18,7 +18,9 @@
 		"tag": "Custom field ID for tag ID",
 		"sound": "Custom field ID for tag sound",
 		"enabled": "Custom value ID for enabled key",
-		"drink": "Custom value ID for preferred drink",
-		"locker": "Custom value ID for locker assignment"
+		"drink": "Custom field ID for preferred drink",
+		"locker": "Custom field ID for locker assignment",
+		"membership status": "Custom field ID for membership approval status",
+		"membership approval": "Custom value ID for approved membership"
 	}
 }
