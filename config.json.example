@@ -3,7 +3,8 @@
 	"slack_webhook": "",
     "urls": {"contacts": "https://api.tidyhq.com/v1/contacts",
         "fields": "https://api.tidyhq.com/v1//custom_fields",
-		"memberships": "https://api.tidyhq.com/v1//memberships"},
+		"memberships": "https://api.tidyhq.com/v1//memberships",
+		"membership_levels": "https://api.tidyhq.com/v1/membership_levels"},
 	"tokens": ["List of authentication tokens",
 		"DEMO CLIENT"
 	],
