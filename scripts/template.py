@@ -1,9 +1,11 @@
 #!/usr/bin/python3
 
-from datetime import datetime
 import json
+import sys
+from datetime import datetime
 
 import util
+
 
 def chain():
     global s
@@ -17,6 +19,8 @@ except FileNotFoundError:
         config = json.load(f)
 
 contacts = util.pull(config=config)
+if not contacts:
+    sys.exit(1)
 s = {"title":"Total contacts",
      "explainer": f"This stat was generated from data stored in TidyHQ. It was retrieved at: {datetime.now()}",
      "table": [["Total contacts"],[len(contacts)]]}
