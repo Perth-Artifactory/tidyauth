@@ -14,6 +14,14 @@ all_reports.py json | script.py
 
 Generates a combined set of all other reports. Due to a lack of caching this will take a while.
 
+### Add reports to markdown page
+
+```bash
+inplace_reports.py meeting path/to/page.md
+```
+
+Which reports to generate and where to put them in the file are defined within `inplace_reports.py`.
+
 ### Template
 
 ```bash
