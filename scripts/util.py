@@ -92,12 +92,14 @@ def report_formatter(data: List[dict],dtype: str) -> str:
     for section in data:
         try:
             # Section title
-            html += f'<h2>{section["title"]}</h2>\n'
-            mrkdwn += f'## {section["title"]}\n'
+            if "title" in section.keys():
+                html += f'<h2>{section["title"]}</h2>\n'
+                mrkdwn += f'## {section["title"]}\n'
 
             # Explainer paragraph
-            html += f'<p>{section["explainer"]}</p>\n'
-            mrkdwn += f'{section["explainer"]}\n'
+            if "explainer" in section.keys():
+                html += f'<p>{section["explainer"]}</p>\n'
+                mrkdwn += f'{section["explainer"]}\n'
 
             # Table head
             html += '<table class="table">\n<thead>\n<tr>\n'
