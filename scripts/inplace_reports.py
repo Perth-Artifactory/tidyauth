@@ -17,6 +17,7 @@ try:
         page = (f.read())
 except FileNotFoundError:
     print(f"Could not find/access: {file}")
+    sys.exit(1)
 
 print("Generating reports...")
 import awaiting_approval
