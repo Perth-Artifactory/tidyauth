@@ -78,6 +78,7 @@ def prettyname(contact_id: str, config: dict = {}, contacts:Union[list,dict] = [
         for c in contacts:
             if str(c["id"]) == str(contact_id):
                 contact = c
+                break
     if contact:
         s = f'{contact["first_name"]} {contact["last_name"]}'
         if contact["nick_name"]:
