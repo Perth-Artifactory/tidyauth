@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import sys
-from pprint import pprint
 
 import util
 
@@ -23,6 +22,7 @@ print("Generating reports...")
 import awaiting_approval
 import locker_utilisation
 import members
+import invoices_owed
 print("Reports generated")
 
 placeholders = []
@@ -32,6 +32,9 @@ placeholders.append({"string":"## Membership Report",
                      "report": members})
 placeholders.append({"string":"**New Memberships for approval**",
                      "report": awaiting_approval})
+placeholders.append({"string":"## Treasurer's Report",
+                     "report": invoices_owed})
+
 
 changed = False
 for p in placeholders:

@@ -18,9 +18,10 @@ import awaiting_approval
 import locker_allocation
 import locker_utilisation
 import members
+import invoices_owed
 import template
 
-reporters = [template, members, locker_allocation, locker_utilisation, audit_emergency, awaiting_approval]
+reporters = [template, members, locker_allocation, locker_utilisation, audit_emergency, awaiting_approval, invoices_owed]
 reports = []
 for reporter in reporters:
     if type(reporter.chain()) == list:

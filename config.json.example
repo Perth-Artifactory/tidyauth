@@ -4,7 +4,8 @@
     "urls": {"contacts": "https://api.tidyhq.com/v1/contacts",
         "fields": "https://api.tidyhq.com/v1//custom_fields",
 		"memberships": "https://api.tidyhq.com/v1//memberships",
-		"membership_levels": "https://api.tidyhq.com/v1/membership_levels"},
+		"membership_levels": "https://api.tidyhq.com/v1/membership_levels",
+		"invoices": "https://api.tidyhq.com/v1/invoices"},
 	"tokens": ["List of authentication tokens",
 		"DEMO CLIENT"
 	],
