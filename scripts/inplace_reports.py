@@ -26,13 +26,13 @@ import invoices_owed
 print("Reports generated")
 
 placeholders = []
-placeholders.append({"string":"**Membership Storage Officer**",
+placeholders.append({"string":"### Membership Storage Officer",
                      "report": locker_utilisation})
-placeholders.append({"string":"## Membership Report",
+placeholders.append({"string":"### Current Status",
                      "report": members})
-placeholders.append({"string":"**New Memberships for approval**",
+placeholders.append({"string":"### New Memberships for approval",
                      "report": awaiting_approval})
-placeholders.append({"string":"## Treasurer's Report",
+placeholders.append({"string":"### Due invoices",
                      "report": invoices_owed})
 
 
@@ -40,10 +40,12 @@ changed = False
 for p in placeholders:
     if p["report"].chain():
         print(f'Adding to {p["string"]}')
-        s = dict(p["report"].chain()[0]) # Format set is to make pyright behave
-        s.pop('title', None)
-        #s.pop('explainer', None)
-        string = util.report_formatter(data=[s],dtype="mrkdwn")
+        s = []
+        for section in p["report"].chain():
+            section.pop('title', None)
+            #section.pop('explainer', None)
+            s.append(section)
+        string = util.report_formatter(data=s,dtype="mrkdwn")
         string = p["string"] + "\n\n" + string
         page = page.replace(p["string"], string)
         changed = True
