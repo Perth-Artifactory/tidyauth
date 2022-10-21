@@ -139,7 +139,7 @@ def report_formatter(data: List[dict],dtype: str) -> str:
         # Only add a page break if we have multiple sections
         if len(data) > 1:
             html += "<hr>\n"
-            mrkdwn += "---\n"
+            mrkdwn += "\n---\n"
 
     if dtype == "mrkdwn":
         return mrkdwn
