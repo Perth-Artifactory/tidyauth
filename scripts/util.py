@@ -65,6 +65,17 @@ def check_membership(contact_id: str = "", config: dict = {}) -> bool:
     else:
         return False
 
+def get_groups(contact: dict, group_id: Union[int,str] = 0):
+    groups = []
+    group_id = int(group_id)
+    for group in contact["groups"]:
+        if group_id and group["id"] == group_id:
+            return True
+        groups.append(group["id"])
+    if group_id:
+        return False
+    return groups
+
 def prettyname(contact_id: str, config: dict = {}, contacts:Union[list,dict] = []) -> str:
     contact = False
     if not contacts:
