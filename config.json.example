@@ -23,5 +23,6 @@
 		"locker": "Custom field ID for locker assignment",
 		"membership status": "Custom field ID for membership approval status",
 		"membership approval": "Custom value ID for approved membership"
-	}
+	},
+	"door_levels": {"123":3}
 }
