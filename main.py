@@ -145,11 +145,16 @@ def fingerprint_sound(url: str, contact_id: str) -> str:
     if r.status_code == 200:
         try:
             check = mutagen.mp3.MP3(fileobj=io.BytesIO(r.content))
+            print(check.info.length)
         except mutagen.mp3.HeaderNotFoundError:
             check = False
         if check:
-            logging.debug(f"{filename} appears to be a valid mp3")
-            return hashlib.md5(sound).hexdigest()
+            if check.info.length < 7:
+                logging.debug(f"{filename} appears to be a valid mp3")
+                return hashlib.md5(sound).hexdigest()
+            else:
+                logging.error(f"{filename} is {round(check.info.length,1)}s long (Limit is 7s)\nDownload: {url}\nContact: {contact_id}")
+                return False  # type: ignore
         else:
             logging.error(f"Could not verify {filename} is a valid mp3\nDownload: {url}\nContact: {contact_id}")
             return False  # type: ignore
