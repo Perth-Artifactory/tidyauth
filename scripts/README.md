@@ -2,6 +2,26 @@
 
 ## Scripts
 
+### All reports
+
+```bash
+all_reports.py [json|html|mrkdwn]
+
+all_reports.py html > report.html
+all_reports.py mrkdwn > report.md
+all_reports.py json | script.py
+```
+
+Generates a combined set of all other reports. Due to a lack of caching this will take a while.
+
+### Add reports to markdown page
+
+```bash
+inplace_reports.py meeting path/to/page.md
+```
+
+Which reports to generate and where to put them in the file are defined within `inplace_reports.py`.
+
 ### Template
 
 ```bash
@@ -13,12 +33,57 @@ Returns a single line containing the total number of contacts in the TidyHQ org 
 ### Lockers
 
 ```bash
-locker.py [json|html|mrkdwn|string]
+locker_allocation.py [json|html|mrkdwn|string]
 
-locker.py html > report.html
-locker.py mrkdwn > report.md
-locker.py json | script.py
+locker_allocation.py html > report.html
+locker_allocation.py mrkdwn > report.md
+locker_allocation.py json | script.py
 ```
+
+Returns a sorted report of locker allocations in various formats. If two people are assigned the same locker the person with the higher TidyHQ contact ID will be listed. (Joined later)
+
+```bash
+locker_utilisation.py [json|html|mrkdwn|string]
+
+locker_utilisation.py html > report.html
+locker_utilisation.py mrkdwn > report.md
+locker_utilisation.py json | script.py
+```
+
+Returns a summary of locker utilisation sorted by membership status.
+
+### Emergency contact validity
+
+```bash
+audit_emergency.py [json|html|mrkdwn|string]
+
+audit_emergency.py html > report.html
+audit_emergency.py mrkdwn > report.md
+audit_emergency.py json | script.py
+```
+
+Returns a report on emergency contacts with basic problems (Missing/invalid number, their own number etc). The report is limited to contacts with at least one membership not marked as expired.
+
+### Membership
+```bash
+members.py [json|html|mrkdwn|string]
+
+members.py html > report.html
+members.py mrkdwn > report.md
+members.py json | script.py
+```
+
+Returns a summary of membership numbers.
+
+```bash
+awaiting_approval.py [json|html|mrkdwn|string]
+
+awaiting_approval.py html > report.html
+awaiting_approval.py mrkdwn > report.md
+awaiting_approval.py json | script.py
+```
+
+Returns a list of prospective members that haven't had their memberships voted on yet.
 
 ## Utilities
 

@@ -50,13 +50,13 @@ def backup(zone: str, mode: str, k=None):
     elif mode == "w":
         with open("backup.{}.json".format(zone), mode) as f:
             json.dump(k,f, indent=4)
-            logging.debug(f"{len(k)} keys written to backup file: backup.{zone}.json")
+            logging.debug(f"{len(k)} keys written to backup file: backup.{zone}.json")  # type: ignore
             return True
     return False
 
-def process(zone: str, contacts: list =None, contact_id: str =None):
+def process(zone: str, contacts: list =None, contact_id: str =None):  # type: ignore
     if not contacts and zone[-4:] == "keys":
-        contacts = util.pull(config=config)
+        contacts = util.pull(config=config)  # type: ignore
 
     keys = {}
 
@@ -72,8 +72,13 @@ def process(zone: str, contacts: list =None, contact_id: str =None):
                     if value["id"] == config["ids"]["enabled"]:
                         key = True
             if key and id:
+                door = 1
+                for priv_group in config["door_levels"]:
+                    if util.get_groups(contact=person, group_id=priv_group):
+                        if config["door_levels"][priv_group] > door:
+                            door = config["door_levels"][priv_group]
                 keys[id] = {
-                "door": 1,
+                "door": door,
                 "groups": [],
                 "name": "{first_name} {last_name}".format(**person),
                 "tidyhq": person["id"]}
@@ -147,10 +152,10 @@ def fingerprint_sound(url: str, contact_id: str) -> str:
             return hashlib.md5(sound).hexdigest()
         else:
             logging.error(f"Could not verify {filename} is a valid mp3\nDownload: {url}\nContact: {contact_id}")
-            return False
+            return False  # type: ignore
     else:
         logging.error(f"Couldn't download sound: {url}")
-        return False
+        return False  # type: ignore
 
 @app.route('/api/v1/<type>/<item>', methods=['GET'])
 def send(type,item):
@@ -164,7 +169,7 @@ def send(type,item):
     if token not in tokens:
         return jsonify({'message':'Send a valid token'}), 401
 
-    if zone == ["sound.data","locker.data"]:
+    if zone in ["sound.data","locker.data"]:
         if not contact_id:
             logging.debug(f"{request.environ['REMOTE_ADDR']} using token:<{token}> requested a sound without an ID")
             return jsonify({'message':'Pass a TidyHQ contact id as tidyhq_id'}), 401
@@ -213,11 +218,11 @@ if __name__ == "__main__":
     for zone in zones:
         if zone[-4:] == "keys":
             logging.debug(f"Initial pull for {zone}")
-            data[zone] = process(zone=zone, contacts=c)
+            data[zone] = process(zone=zone, contacts=c)  # type: ignore
         else:
             data[zone] = process(zone=zone)
-        if not data[zone] and zone != "sound.data":
-            logging.error("Could not pull from TidyHQ, loading file backup")
+        if not data[zone] and zone not in  ["sound.data","locker.data"]:
+            logging.error(f"Could not pull from TidyHQ, loading file backup for {zone}")
             data[zone] = backup(zone=zone, mode="r")
         
     from waitress import serve
