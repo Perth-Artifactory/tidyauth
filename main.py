@@ -96,8 +96,8 @@ def process(zone: str, contacts: list =None, contact_id: str =None):  # type: ig
             if id:
                 keys[id] = {"name": "{first_name} {last_name}".format(**person),
                             "tidyhq": person["id"]}
-            if drink:
-                keys[id]["drink"] = drink
+                if drink:
+                    keys[id]["drink"] = drink
     
     elif zone == "vending.data":
         # Get drink information
