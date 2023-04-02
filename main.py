@@ -14,7 +14,7 @@ from slack_logger import SlackFormatter, SlackHandler
 import scripts.util as util
 
 with open("config.json","r") as f:
-    config = json.load(f)
+    config: dict = json.load(f)
 
 # Set up logging
 
@@ -133,6 +133,27 @@ def process(zone: str, contacts: list =None, contact_id: str =None):  # type: ig
                 return {"locker":locker}
         return False
 
+    elif zone == "contacts.keys":
+        contacts = util.pull(config=config, restructured=True) # type: ignore
+        c = {}
+        for contact in contacts:
+
+            person = contacts[contact]
+            current = {"name":"{first_name} {last_name}".format(**person),
+                       "phone":person["phone_number"]}
+            if person["nick_name"]:
+                current["name"] += f' ({person["nick_name"]})' 
+
+            slack = util.find(contact=person, field_id=config["ids"]["slack"])
+            if slack:
+                current["slack"] = slack
+
+            tag = util.find(contact=person, field_id = config["ids"]["tag"])
+            if tag:
+                current["tag"] = tag
+            c[contact] = current
+        return c
+
     # Generic notification and saving
     logging.debug(f"Updated keys for zone:{zone}, {len(keys)} keys processed")
     backup(zone=zone, mode="w", k=keys)
@@ -217,7 +238,7 @@ def home():
 
 if __name__ == "__main__":
     logging.info("Starting pre-queries")
-    zones = ["door.keys", "vending.keys", "vending.data", "sound.data", "locker.data"]
+    zones = ["door.keys", "vending.keys", "vending.data", "sound.data", "locker.data", "contacts.keys"]
     data = {}
     c = util.pull(config=config)
     for zone in zones:

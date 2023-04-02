@@ -3,3 +3,4 @@ backup.*.json
 *pycache*
 test.*
 .vscode/
+test_contacts.py
