@@ -178,6 +178,21 @@ This method will ignore the `update` parameter. It also requires a TidyHQ contac
 {"locker": "B01"}
 ```
 
+### Contacts
+
+`/api/v1/keys/contacts`
+
+```json
+{"123456": {"name": "John Smith",
+             "phone": "0412345678"},
+ "123457": {"name": "Jane Smith (J'Dizzle)",
+             "phone": "0492112890",
+             "slack": "UMM23ZZ8123",
+             "tag": "0007781876"}}
+```
+
+This method will ignore the `update` parameter. The Slack and key tag fields will only be present if set in TidyHQ
+
 ## Response codes
 
 * 200: Completed successfully
