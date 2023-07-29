@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  app:
+    image: tidyauth:latest
+    volumes:
+      - /home/tazard/code/tidyauth/config.json:/app/config.json
+    ports:
+      - 5000:5000
