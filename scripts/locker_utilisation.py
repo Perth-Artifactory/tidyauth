@@ -17,7 +17,7 @@ if __name__ != "__main__":
     output_format = "internal"
 elif len(sys.argv) < 2:
     output_format = "string"
-elif sys.argv[1] not in ["json","html","mrkdwn","string"]:
+elif sys.argv[1] not in ["json","html","html_embed","mrkdwn","string"]:
     output_format = "string"
 else:
     output_format = sys.argv[1]
@@ -71,7 +71,7 @@ counts["Total"] = t
 if output_format == "json":
     pprint(counts)
     sys.exit(0)
-elif output_format in ["html", "mrkdwn","internal"]:
+elif output_format in ["html","html_embed", "mrkdwn","internal"]:
     d = [["Type", "#", "%"]]
     for c in counts:
         d.append([c, counts[c], f'{round(counts[c] / counts["Total"]*100)}%'])  # type: ignore
@@ -81,7 +81,9 @@ elif output_format in ["html", "mrkdwn","internal"]:
     s = [{"title":"Locker utilisation",
          "explainer": f"This table has been generated from data stored in TidyHQ. It was retrieved at: {datetime.now()}",
          "table": d}]
-    if output_format != "internal":
+    if output_format == "html_embed":
+        print(util.report_formatter(data = [{"table":d}], dtype = output_format))
+    elif output_format != "internal":
         print(util.report_formatter(data=s, dtype=output_format))
 
 elif output_format == "string":

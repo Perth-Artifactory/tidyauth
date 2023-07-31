@@ -168,6 +168,8 @@ def report_formatter(data: List[dict],dtype: str) -> str:
             with open("./scripts/report_template.html","r") as f:
                 html_wrapper = f.read()
         return html_wrapper.format(html)
+    elif dtype == "html_embed":
+        return html
     return ""
 
 

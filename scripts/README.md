@@ -5,7 +5,7 @@
 ### All reports
 
 ```bash
-all_reports.py [json|html|mrkdwn]
+all_reports.py [json|html|html_embed|mrkdwn]
 
 all_reports.py html > report.html
 all_reports.py mrkdwn > report.md
@@ -33,7 +33,7 @@ Returns a single line containing the total number of contacts in the TidyHQ org 
 ### Lockers
 
 ```bash
-locker_allocation.py [json|html|mrkdwn|string]
+locker_allocation.py [json|html|html_embed|mrkdwn|string]
 
 locker_allocation.py html > report.html
 locker_allocation.py mrkdwn > report.md
@@ -43,7 +43,7 @@ locker_allocation.py json | script.py
 Returns a sorted report of locker allocations in various formats. If two people are assigned the same locker the person with the higher TidyHQ contact ID will be listed. (Joined later)
 
 ```bash
-locker_utilisation.py [json|html|mrkdwn|string]
+locker_utilisation.py [json|html|html_embed|mrkdwn|string]
 
 locker_utilisation.py html > report.html
 locker_utilisation.py mrkdwn > report.md
@@ -55,7 +55,7 @@ Returns a summary of locker utilisation sorted by membership status.
 ### Emergency contact validity
 
 ```bash
-audit_emergency.py [json|html|mrkdwn|string]
+audit_emergency.py [json|html|html_embed|mrkdwn|string]
 
 audit_emergency.py html > report.html
 audit_emergency.py mrkdwn > report.md
@@ -66,7 +66,7 @@ Returns a report on emergency contacts with basic problems (Missing/invalid numb
 
 ### Membership
 ```bash
-members.py [json|html|mrkdwn|string]
+members.py [json|html|html_embed|mrkdwn|string]
 
 members.py html > report.html
 members.py mrkdwn > report.md
@@ -76,7 +76,7 @@ members.py json | script.py
 Returns a summary of membership numbers.
 
 ```bash
-awaiting_approval.py [json|html|mrkdwn|string]
+awaiting_approval.py [json|html|html_embed|mrkdwn|string]
 
 awaiting_approval.py html > report.html
 awaiting_approval.py mrkdwn > report.md

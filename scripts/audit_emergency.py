@@ -38,7 +38,7 @@ if __name__ != "__main__":
     output_format = "internal"
 elif len(sys.argv) < 2:
     output_format = "string"
-elif sys.argv[1] not in ["json","html","mrkdwn","string"]:
+elif sys.argv[1] not in ["json","html","html_embed","mrkdwn","string"]:
     output_format = "string"
 else:
     output_format = sys.argv[1]
@@ -92,3 +92,5 @@ if len(d) > 1:
             print(person[1],person[2])
             print(person[3])
             print("")
+    elif output_format == "html_embed":
+        print(util.report_formatter(data = [{"table":d}], dtype = output_format))
