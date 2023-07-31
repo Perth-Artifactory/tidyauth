@@ -53,10 +53,16 @@ def check_membership(contact_id: str = "", config: dict = {}) -> bool:
         return False
     newest = 60000
     for membership in memberships:
-        try:
-            date = datetime.strptime(membership["end_date"], "%Y-%m-%d")
-        except ValueError:
-            date = datetime.strptime(membership["end_date"], "%d-%m-%Y")
+        formats = ["%Y-%m-%d","%d-%m-%Y","%Y-%m-%dT%H:%M:%S+08:00","%Y-%m-%dT%H:%M:%S%z"]
+        for f in formats:
+            try:
+                date = datetime.strptime(membership["end_date"], f)
+            except ValueError:
+                pass
+        
+        # remove timezone info
+        date = date.replace(tzinfo=None)    
+        
         since = int((datetime.now()-date).total_seconds()/86400)
         if since < newest:
             newest = int(since)
