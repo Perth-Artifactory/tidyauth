@@ -68,7 +68,7 @@ for membership in memberships:
                 "name": util.prettyname(contact_id=contact["id"], contacts=contacts),
                 "days": days,
                 "age": new_age,
-                "birthday": birth_md.strftime("%Y-%m-%d"),
+                "birthday": birthdate.strftime("%Y-%m-%d"),
             }
 
 # Sort the list of birthdays by how many days until their birthday
