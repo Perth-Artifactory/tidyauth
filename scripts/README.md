@@ -85,6 +85,16 @@ awaiting_approval.py json | script.py
 
 Returns a list of prospective members that haven't had their memberships voted on yet.
 
+```bash
+birthdays.py [json|html|html_embed|mrkdwn|string]
+
+birthdays.py html > report.html
+birthdays.py mrkdwn > report.md
+birthdays.py json | script.py
+```
+
+Returns a list of member birthdays sorted by how long until they occur
+
 ## Utilities
 
 ### Contact retrieval
@@ -123,12 +133,12 @@ Takes a TidyHQ contact ID, an optional configuration dictionary (for the TidyHQ 
 ```python
 report_formatter(data: List[dict],dtype: str) -> str:
 ```
-Accepts a list of dictionaries containing report sections and an output format. (`html` or `mrkdown`).
+Accepts a list of dictionaries containing report sections and an output format. (`html`, `html_embed`, or `mrkdown`).
 
 Each dictionary in the data list should contain the following keys:
 
-* `title` - The title of the section
-* `explainer` - A brief description of the section
+* `title` - The title of the section (optional)
+* `explainer` - A brief description of the section (optional)
 * `table` - A 2d list of values. The first row will be treated as the header. There is no requirement for all table rows to have the maximum number of items.
 
 Outputs a string in either markdown or html as appropriate. Page formatting for html is handled by `report_template.html`
