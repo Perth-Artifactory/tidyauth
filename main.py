@@ -89,6 +89,8 @@ def process(zone: str, contacts: list = None, contact_id: str = None):  # type: 
                     ids = [id]
                 for i in ids:
                     i = i.strip()
+                    if not i:
+                        continue
                     keys[i] = {
                         "door": door,
                         "groups": [],
