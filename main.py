@@ -61,6 +61,8 @@ def backup(zone: str, mode: str, k=None):
 def process(zone: str, contacts: list = None, contact_id: str = None):  # type: ignore
     if not contacts and zone[-4:] == "keys":
         contacts = util.pull(config=config)  # type: ignore
+        if not contacts:
+            return False
 
     keys = {}
 
