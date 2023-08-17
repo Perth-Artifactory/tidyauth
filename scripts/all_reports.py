@@ -7,7 +7,7 @@ import util
 
 if len(sys.argv) < 2:
     output_format = "mrkdwn"
-elif sys.argv[1] not in ["json","html","mrkdwn"]:
+elif sys.argv[1] not in ["json", "html", "mrkdwn"]:
     output_format = "mrkdwn"
 else:
     output_format = sys.argv[1]
@@ -21,7 +21,15 @@ import members
 import invoices_owed
 import template
 
-reporters = [template, members, locker_allocation, locker_utilisation, audit_emergency, awaiting_approval, invoices_owed]
+reporters = [
+    template,
+    members,
+    locker_allocation,
+    locker_utilisation,
+    audit_emergency,
+    awaiting_approval,
+    invoices_owed,
+]
 reports = []
 for reporter in reporters:
     if type(reporter.chain()) == list:
@@ -32,4 +40,4 @@ for reporter in reporters:
 
 if output_format == "json":
     pprint(reports)
-print(util.report_formatter(data=reports,dtype=output_format))
+print(util.report_formatter(data=reports, dtype=output_format))
