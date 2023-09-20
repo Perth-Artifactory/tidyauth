@@ -259,6 +259,7 @@ def send(type, item):
         )
 
     if data[zone]:
+        logging.debug(f'Sent {len(data[zone])} items in response to request')
         return jsonify(data[zone])
     else:
         logging.debug("No keys in cache, pulling from TidyHQ")
