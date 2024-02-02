@@ -161,10 +161,7 @@ def report_formatter(data: List[dict], dtype: str) -> str:
         # Table body
 
         for line in section["table"][1:]:
-            hline = [
-                str(l).replace("\n", "<br/>")
-                for l, pad in zip(line, col_lengths)
-            ]
+            hline = [str(l).replace("\n", "<br/>") for l, pad in zip(line, col_lengths)]
             mline = [
                 str(l).replace("\n", ", ").ljust(pad, " ")
                 for l, pad in zip(line, col_lengths)
