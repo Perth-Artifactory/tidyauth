@@ -113,7 +113,7 @@ if dates:
     s.append(
         {
             "title": "Due membership invoices",
-            "explainer": f"This table has been generated from data stored in TidyHQ at: {datetime.now()}",
+            "explainer": f"Breakdown of how many invoices are due by months due.",
             "table": d,
         }
     )
@@ -122,13 +122,25 @@ if outstanding:
     d = [["Name", "#"]]
     for p in sorted(outstanding.items(), key=lambda i: i[1]["invoices"], reverse=True):
         d.append([p[1]["name"], p[1]["invoices"]])
-    s.append({"explainer": "Invoices due 7+ days ago", "table": d})
+    s.append(
+        {
+            "title": "Invoices due 7+ days ago",
+            "table": d,
+            "explainer": "Members can appear on both lists",
+        }
+    )
 
 if close:
     d = [["Name", "#"]]
     for p in sorted(close.items(), key=lambda i: i[1]["invoices"], reverse=True):
         d.append([p[1]["name"], p[1]["invoices"]])
-    s.append({"explainer": "Invoices due 74+ days ago", "table": d})
+    s.append(
+        {
+            "title": "Invoices due 74+ days ago",
+            "table": d,
+            "explainer": "Members can appear on both lists",
+        }
+    )
 
 if s:
     if output_format == "json":
@@ -143,4 +155,4 @@ if s:
         pprint(outstanding)
         pprint(close)
     elif output_format == "html_embed":
-        print(util.report_formatter(data=[{"table": d}], dtype=output_format))
+        print(util.report_formatter(data=s, dtype=output_format))
