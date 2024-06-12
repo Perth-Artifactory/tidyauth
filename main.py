@@ -83,7 +83,7 @@ def process(zone: str, contacts: list = None, contact_id: str = None):  # type: 
                     if util.get_groups(contact=person, group_id=priv_group):
                         if config["door_levels"][priv_group] > door:
                             door = config["door_levels"][priv_group]
-                if ","  in id:
+                if "," in id:
                     ids = id.split(",")
                 else:
                     ids = [id]
@@ -99,7 +99,9 @@ def process(zone: str, contacts: list = None, contact_id: str = None):  # type: 
                     }
                     if door_sound:
                         if door_sound != "/file_values/original/missing.png":
-                            h = fingerprint_sound(url=door_sound, contact_id=person["id"])
+                            h = fingerprint_sound(
+                                url=door_sound, contact_id=person["id"]
+                            )
                             if h:
                                 keys[i]["sound"] = h
 
@@ -189,16 +191,16 @@ def fingerprint_sound(url: str, contact_id: str) -> str:
     if r.status_code == 200:
         try:
             check = mutagen.mp3.MP3(fileobj=io.BytesIO(r.content))
-            print(check.info.length)
+            length = check.info.length
         except mutagen.mp3.HeaderNotFoundError:
             check = False
-        if check:
-            if check.info.length < 7:
+        if length:
+            if length < 7:
                 logging.debug(f"{filename} appears to be a valid mp3")
                 return hashlib.md5(sound).hexdigest()
             else:
                 logging.error(
-                    f"{filename} is {round(check.info.length,1)}s long (Limit is 7s)\nDownload: {url}\nContact: {contact_id}"
+                    f"{filename} is {round(length,1)}s long (Limit is 7s)\nDownload: {url}\nContact: {contact_id}"
                 )
                 return False  # type: ignore
         else:
@@ -259,7 +261,7 @@ def send(type, item):
         )
 
     if data[zone]:
-        logging.debug(f'Sent {len(data[zone])} items in response to request')
+        logging.debug(f"Sent {len(data[zone])} items in response to request")
         return jsonify(data[zone])
     else:
         logging.debug("No keys in cache, pulling from TidyHQ")
