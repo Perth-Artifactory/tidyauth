@@ -56,15 +56,15 @@ for membership in memberships:
             util.prettyname(contact_id=membership["contact_id"], contacts=contacts)
         ]
 
-        status = "No status"
-        bond = "No bond"
+        status = ""
+        bond = "Bond field empty"
         key = "No key"
 
         # Iterate over custom fields
         for field in contact["custom_fields"]:
             # Check whether they have a key _enabled_
             if field["id"] == config["ids"]["status"]:
-                for value in field["values"]:
+                for value in field["value"]:
                     status += value["title"] + ", "
                 status = status[:-2]
 
@@ -76,7 +76,10 @@ for membership in memberships:
             elif field["id"] == config["ids"]["tag"]:
                 key = field["value"]
 
-        current += [status, bond, key]
+        if status == "":
+            status = "No status set (disabled)"
+
+        current += [status, "$" + bond, key]
         d.append(current)
 
 if len(d) > 1:
@@ -85,7 +88,7 @@ if len(d) > 1:
     elif output_format in ["html", "mrkdwn", "internal"]:
         s = [
             {
-                "title": "Keyholder status ",
+                "title": "Keyholder status",
                 "explainer": f"This table has been generated from data stored in TidyHQ. It only includes contacts with memberships not marked as expired. It was retrieved at: {datetime.now()}",
                 "table": d,
             }
