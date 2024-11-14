@@ -46,39 +46,45 @@ if not contacts:
 
 problems = []
 for membership in memberships:
-    if membership["state"] != "expired":
-        contact = contacts[membership["contact_id"]]  # type: ignore
-        a = util.find(contact=contact, field_id=config["ids"]["membership status"])
-        if not a:
-            problems.append(
-                {
-                    "name": util.prettyname(
-                        contact_id=membership["contact_id"], contacts=contacts
-                    ),
-                    "problem": "Active membership but no membership groups",
-                    "level": membership["membership_level"]["name"],
-                }
-            )
-        elif len(a) > 1:
-            problems.append(
-                {
-                    "name": util.prettyname(
-                        contact_id=membership["contact_id"], contacts=contacts
-                    ),
-                    "problem": "Active membership and multiple membership groups",
-                    "level": membership["membership_level"]["name"],
-                }
-            )
-        elif a[0]["id"] != config["ids"]["membership approval"]:
-            problems.append(
-                {
-                    "name": util.prettyname(
-                        contact_id=membership["contact_id"], contacts=contacts
-                    ),
-                    "problem": "Active membership and has not had membership approved yet",
-                    "level": membership["membership_level"]["name"],
-                }
-            )
+    if membership["state"] == "expired":
+        continue
+
+    if membership["membership_level"]["name"] == "Visitor":
+        continue
+
+    contact = contacts[membership["contact_id"]]  # type: ignore
+    a = util.find(contact=contact, field_id=config["ids"]["membership status"])
+    if not a:
+        problems.append(
+            {
+                "name": util.prettyname(
+                    contact_id=membership["contact_id"], contacts=contacts
+                ),
+                "problem": "Active membership but no indication of approval",
+                "level": membership["membership_level"]["name"],
+            }
+        )
+    elif len(a) > 1:
+        problems.append(
+            {
+                "name": util.prettyname(
+                    contact_id=membership["contact_id"], contacts=contacts
+                ),
+                "problem": "Active membership and too many statuses",
+                "level": membership["membership_level"]["name"],
+            }
+        )
+    elif a[0]["id"] != config["ids"]["membership approval"]:
+        problems.append(
+            {
+                "name": util.prettyname(
+                    contact_id=membership["contact_id"], contacts=contacts
+                ),
+                "problem": f"Active membership but status is: {a[0]['title']}",
+                "level": membership["membership_level"]["name"],
+            }
+        )
+
 if problems:
     d = [["Name", "Status", "Level"]]
     for problem in problems:
