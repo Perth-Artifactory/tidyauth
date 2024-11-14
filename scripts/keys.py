@@ -46,7 +46,7 @@ contacts = util.pull(config=config, restructured=True)
 if type(contacts) != dict:
     sys.exit(1)
 
-d = [["Name", "Key Status", "Bond", "Key"]]
+d = []
 for membership in memberships:
     if membership["state"] != "expired":
         contact = contacts[membership["contact_id"]]
@@ -59,6 +59,7 @@ for membership in memberships:
         status = ""
         bond = "Bond field empty"
         key = "No key"
+        bond_note = ""
 
         # Iterate over custom fields
         for field in contact["custom_fields"]:
@@ -70,17 +71,29 @@ for membership in memberships:
 
             # Check whether they have a bond
             elif field["id"] == config["ids"]["bond"]:
-                bond = field["value"]
+                bond = "$" + field["value"]
 
             # Check whether they have a key
             elif field["id"] == config["ids"]["tag"]:
                 key = field["value"]
 
+            elif field["id"] == config["ids"]["bond note"]:
+                bond_note = field["value"]
+
         if status == "":
             status = "No status set (disabled)"
 
-        current += [status, "$" + bond, key]
+        if bond_note == "":
+            bond_note = "-"
+
+        current += [status, bond, bond_note, key]
         d.append(current)
+
+# Sort the list by the key status
+d = sorted(d, key=lambda x: x[1])
+
+# Add the header
+d.insert(0, ["Name", "Key Status", "Bond", "Bond Note", "Key"])
 
 if len(d) > 1:
     if output_format == "json":
