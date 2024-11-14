@@ -135,7 +135,8 @@ def report_formatter(data: List[dict], dtype: str) -> str:
 
         # Explainer paragraph
         if "explainer" in section.keys():
-            html += f'<p>{section["explainer"]}</p>\n'
+            tag = "pre" if section.get("pre", False) else "p"
+            html += f'<{tag}>{section["explainer"]}</{tag}>\n'
             mrkdwn += f'{section["explainer"]}\n'
 
         # Calculate table entry padding
