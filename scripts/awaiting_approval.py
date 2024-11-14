@@ -64,12 +64,13 @@ for membership in memberships:
                 ),
                 "problem": "Active membership but no indication of approval",
                 "level": membership["membership_level"]["name"],
+                "contact_id": membership["contact_id"],
             }
         )
         meeting_format.append(
             [
                 membership["created_at"],
-                f"[{util.prettyname(contact_id=membership['contact_id'], contacts=contacts)}](https://artifactory.tidyhq.com/contacts/{membership['contact_id']})",
+                util.prettyname(contact_id=membership["contact_id"], contacts=contacts),
                 membership["membership_level"]["name"],
             ]
         )
@@ -81,6 +82,7 @@ for membership in memberships:
                 ),
                 "problem": "Active membership and too many statuses",
                 "level": membership["membership_level"]["name"],
+                "contact_id": membership["contact_id"],
             }
         )
     elif a[0]["id"] != config["ids"]["membership approval"]:
@@ -91,13 +93,16 @@ for membership in memberships:
                 ),
                 "problem": f"Active membership but status is: {a[0]['title']}",
                 "level": membership["membership_level"]["name"],
+                "contact_id": membership["contact_id"],
             }
         )
         if a[0]["id"] == config["ids"]["membership waiting"]:
             meeting_format.append(
                 [
                     membership["created_at"],
-                    f"[{util.prettyname(contact_id=membership['contact_id'], contacts=contacts)}](https://artifactory.tidyhq.com/contacts/{membership['contact_id']})",
+                    util.prettyname(
+                        contact_id=membership["contact_id"], contacts=contacts
+                    ),
                     membership["membership_level"]["name"],
                 ]
             )
@@ -105,6 +110,16 @@ for membership in memberships:
 if problems:
     d = [["Name", "Status", "Level"]]
     for problem in problems:
+        # Inject links into name fields
+        if output_format in ["html_embed", "html"]:
+            problem["name"] = (
+                f'<a href="https://artifactory.tidyhq.com/contacts/{problem["contact_id"]}">{problem["name"]}</a>'
+            )
+        elif output_format == "mrkdwn":
+            problem["name"] = (
+                f'[{problem["name"]}](https://artifactory.tidyhq.com/contacts/{problem["contact_id"]})'
+            )
+
         d.append([problem["name"], problem["problem"], problem["level"]])
     if output_format == "json":
         pprint(d[1:])
@@ -122,7 +137,6 @@ if problems:
         for person in d[1:]:
             print(f"{person[0]}: {person[1]}")
     elif output_format == "html_embed":
-        # Format meeting_format for pasting into meeting minutes
 
         print(
             util.report_formatter(
