@@ -8,6 +8,7 @@ from pprint import pprint
 
 import requests
 import util
+from tabulate import tabulate
 
 
 def chain():
@@ -45,6 +46,7 @@ if not contacts:
     sys.exit(1)
 
 problems = []
+meeting_format = [["Date", "Name", "Class of membership"]]
 for membership in memberships:
     if membership["state"] == "expired":
         continue
@@ -63,6 +65,13 @@ for membership in memberships:
                 "problem": "Active membership but no indication of approval",
                 "level": membership["membership_level"]["name"],
             }
+        )
+        meeting_format.append(
+            [
+                membership["created_at"],
+                f"[{util.prettyname(contact_id=membership['contact_id'], contacts=contacts)}](https://artifactory.tidyhq.com/contacts/{membership['contact_id']})",
+                membership["membership_level"]["name"],
+            ]
         )
     elif len(a) > 1:
         problems.append(
@@ -84,6 +93,14 @@ for membership in memberships:
                 "level": membership["membership_level"]["name"],
             }
         )
+        if a[0]["id"] == config["ids"]["membership waiting"]:
+            meeting_format.append(
+                [
+                    membership["created_at"],
+                    f"[{util.prettyname(contact_id=membership['contact_id'], contacts=contacts)}](https://artifactory.tidyhq.com/contacts/{membership['contact_id']})",
+                    membership["membership_level"]["name"],
+                ]
+            )
 
 if problems:
     d = [["Name", "Status", "Level"]]
@@ -105,4 +122,17 @@ if problems:
         for person in d[1:]:
             print(f"{person[0]}: {person[1]}")
     elif output_format == "html_embed":
-        print(util.report_formatter(data=[{"table": d}], dtype=output_format))
+        # Format meeting_format for pasting into meeting minutes
+
+        print(
+            util.report_formatter(
+                data=[
+                    {
+                        "table": d,
+                        "explainer": f"The following table is preformatted for pasting into meeting minutes. It only includes people with an active membership but no indication of approval.\n{tabulate(meeting_format, headers='firstrow', tablefmt='github')}",
+                        "pre": True,
+                    },
+                ],
+                dtype=output_format,
+            )
+        )

@@ -11,6 +11,7 @@ This repository contains a server designed to serve cached and live TidyHQ data 
 * phonenumbers: Phone number verification
 * requests: Interacting with TidyHQ API
 * slack-logger: Slack webhook support for logging
+* tabulate: formatting tables
 
 ## Configuration
 
