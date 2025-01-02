@@ -72,6 +72,7 @@ def process(zone: str, contacts: list = None, contact_id: str = None):  # type: 
             id = util.find(contact=person, field_id=config["ids"]["tag"])
             door_sound = util.find(contact=person, field_id=config["ids"]["sound"])
             k = util.find(contact=person, field_id=config["ids"]["status"])
+            slack = util.find(contact=person, field_id=config["ids"]["slack"])
             key = False
             if k:
                 for value in k:
@@ -104,6 +105,8 @@ def process(zone: str, contacts: list = None, contact_id: str = None):  # type: 
                             )
                             if h:
                                 keys[i]["sound"] = h
+                    if slack:
+                        keys[i]["slack"] = slack
 
     # Vending machine specific processing
     elif zone == "vending.keys":
