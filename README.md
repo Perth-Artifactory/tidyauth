@@ -114,7 +114,8 @@ A response on `/` is included for route testing purposes. It will return `200` i
 		"groups": [],
 		"name": "John Smith",
 		"tidyhq": 8912345,
-		"sound": "cd3d9dd904aca51abc55dbe7b7cc7b28"
+		"sound": "cd3d9dd904aca51abc55dbe7b7cc7b28",
+		"slack": "UACBE123"
 	}
 }
 ```
