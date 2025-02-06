@@ -18,7 +18,7 @@ def pull(contact_id: str = "", config: dict = {}, restructured: bool = False):
                 contact = r.json()
                 return contact
             return False
-        except requests.exceptions.RequestException as e:
+        except requests.exceptions.RequestException:
             logging.error("Could not reach TidyHQ")
             return False
     # Get all contact information from TidyHQ
@@ -28,7 +28,7 @@ def pull(contact_id: str = "", config: dict = {}, restructured: bool = False):
             config["urls"]["contacts"], params={"access_token": config["tidytoken"]}
         )
         contacts = r.json()
-    except requests.exceptions.RequestException as e:
+    except requests.exceptions.RequestException:
         logging.error("Could not reach TidyHQ")
         return False
     if restructured:
@@ -58,7 +58,7 @@ def check_membership(contact_id: str = "", config: dict = {}) -> bool:
             memberships = r.json()
         else:
             return False
-    except requests.exceptions.RequestException as e:
+    except requests.exceptions.RequestException:
         logging.error("Could not reach TidyHQ")
         return False
     newest = 60000
@@ -107,10 +107,10 @@ def prettyname(
         contact = pull(contact_id=contact_id, config=config)
         if contact:
             return "{first_name} {last_name} ({nick_name})".format(**contact)
-    elif type(contacts) == dict:
+    elif isinstance(contacts, dict):
         if int(contact_id) in contacts.keys():  # type: ignore
             contact = contacts[int(contact_id)]
-    elif type(contacts) == list:
+    elif isinstance(contacts, list):
         for c in contacts:
             if str(c["id"]) == str(contact_id):
                 contact = c

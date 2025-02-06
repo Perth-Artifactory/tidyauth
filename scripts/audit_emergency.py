@@ -14,9 +14,9 @@ import util
 
 def check_num(num):
     try:
-        if phonenumbers.is_valid_number(phonenumbers.parse(num, "AU")):
-            return True
-        elif phonenumbers.is_valid_number(phonenumbers.parse("08" + num, "AU")):
+        if phonenumbers.is_valid_number(
+            phonenumbers.parse(num, "AU")
+        ) or phonenumbers.is_valid_number(phonenumbers.parse("08" + num, "AU")):
             return True
     except phonenumbers.phonenumberutil.NumberParseException:
         return False
@@ -55,7 +55,7 @@ except requests.exceptions.RequestException as e:
 
 contacts = util.pull(config=config, restructured=True)
 
-if type(contacts) != dict:
+if not isinstance(contacts, dict):
     sys.exit(1)
 
 d = [["Name", "Emergency Contact Person", "Emergency Contact #", "Problem"]]

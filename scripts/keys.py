@@ -43,7 +43,7 @@ except requests.exceptions.RequestException as e:
 
 contacts = util.pull(config=config, restructured=True)
 
-if type(contacts) != dict:
+if not isinstance(contacts, dict):
     sys.exit(1)
 
 d = []

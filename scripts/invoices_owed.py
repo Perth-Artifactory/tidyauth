@@ -102,7 +102,7 @@ if dates:
     d = [[], []]
     for c, f in zip(range(len(dates)), sorted(dates.keys())):
         if f == 0:
-            d[0].append(f"<1")
+            d[0].append("<1")
         elif f == 1:
             d[0].append(f)
         elif c > 3:
@@ -113,7 +113,7 @@ if dates:
     s.append(
         {
             "title": "Due membership invoices",
-            "explainer": f"Breakdown of how many invoices are due by months due.",
+            "explainer": "Breakdown of how many invoices are due by months due.",
             "table": d,
         }
     )
@@ -143,16 +143,12 @@ if close:
     )
 
 if s:
-    if output_format == "json":
+    if output_format in ["json", "string"]:
         pprint(dates)
         pprint(outstanding)
         pprint(close)
     elif output_format in ["html", "mrkdwn", "internal"]:
         if output_format != "internal":
             print(util.report_formatter(data=s, dtype=output_format))
-    elif output_format == "string":
-        pprint(dates)
-        pprint(outstanding)
-        pprint(close)
     elif output_format == "html_embed":
         print(util.report_formatter(data=s, dtype=output_format))

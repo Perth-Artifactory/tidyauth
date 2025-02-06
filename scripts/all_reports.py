@@ -32,7 +32,7 @@ reporters = [
 ]
 reports = []
 for reporter in reporters:
-    if type(reporter.chain()) == list:
+    if isinstance(reporter.chain(), list):
         reports += reporter.chain()
     else:
         print(reporter)

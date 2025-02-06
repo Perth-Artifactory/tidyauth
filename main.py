@@ -3,7 +3,7 @@ import hashlib
 import io
 import json
 import logging
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union
 
 import flask
 import mutagen.mp3
@@ -33,6 +33,8 @@ tokens = config["tokens"]
 
 app = flask.Flask(__name__)
 
+name_format = "{first_name} {last_name}"
+
 
 def backup(zone: str, mode: str, k=None):
     if mode == "r":
@@ -59,17 +61,17 @@ def backup(zone: str, mode: str, k=None):
 
 
 def process(zone: str, contacts: list = None, contact_id: str = None):  # type: ignore
-    if not contacts and zone[-4:] == "keys":
+    if not contacts and zone.endswith("keys"):
         contacts = util.pull(config=config)  # type: ignore
         if not contacts:
             return False
 
     keys = {}
 
-    # Door specifc processing
+    # Door specific processing
     if zone == "door.keys":
         for person in contacts:
-            id = util.find(contact=person, field_id=config["ids"]["tag"])
+            tag_id = util.find(contact=person, field_id=config["ids"]["tag"])
             door_sound = util.find(contact=person, field_id=config["ids"]["sound"])
             k = util.find(contact=person, field_id=config["ids"]["status"])
             slack = util.find(contact=person, field_id=config["ids"]["slack"])
@@ -78,16 +80,16 @@ def process(zone: str, contacts: list = None, contact_id: str = None):  # type: 
                 for value in k:
                     if value["id"] == config["ids"]["enabled"]:
                         key = True
-            if key and id:
+            if key and tag_id:
                 door = 1
                 for priv_group in config["door_levels"]:
                     if util.get_groups(contact=person, group_id=priv_group):
                         if config["door_levels"][priv_group] > door:
                             door = config["door_levels"][priv_group]
-                if "," in id:
-                    ids = id.split(",")
+                if "," in tag_id:
+                    ids = tag_id.split(",")
                 else:
-                    ids = [id]
+                    ids = [tag_id]
                 for i in ids:
                     i = i.strip()
                     if not i:
@@ -95,7 +97,7 @@ def process(zone: str, contacts: list = None, contact_id: str = None):  # type: 
                     keys[i] = {
                         "door": door,
                         "groups": [],
-                        "name": "{first_name} {last_name}".format(**person),
+                        "name": name_format.format(**person),
                         "tidyhq": person["id"],
                     }
                     if door_sound:
@@ -112,14 +114,14 @@ def process(zone: str, contacts: list = None, contact_id: str = None):  # type: 
     elif zone == "vending.keys":
         for person in contacts:
             drink = util.find(contact=person, field_id=config["ids"]["drink"])
-            id = util.find(contact=person, field_id=config["ids"]["tag"])
-            if id:
-                keys[id] = {
-                    "name": "{first_name} {last_name}".format(**person),
+            tag_id = util.find(contact=person, field_id=config["ids"]["tag"])
+            if tag_id:
+                keys[tag_id] = {
+                    "name": name_format.format(**person),
                     "tidyhq": person["id"],
                 }
                 if drink:
-                    keys[id]["drink"] = drink
+                    keys[tag_id]["drink"] = drink
 
     elif zone == "vending.data":
         # Get drink information
@@ -130,7 +132,7 @@ def process(zone: str, contacts: list = None, contact_id: str = None):  # type: 
                 params={"access_token": config["tidytoken"]},
             )
             d = r.json()
-        except requests.exceptions.RequestException as e:
+        except requests.exceptions.RequestException:
             logging.error("Could not reach TidyHQ")
             return False
         drinks = {}
@@ -165,7 +167,7 @@ def process(zone: str, contacts: list = None, contact_id: str = None):  # type: 
         for contact in contacts:
             person = contacts[contact]
             current = {
-                "name": "{first_name} {last_name}".format(**person),
+                "name": name_format.format(**person),
                 "phone": person["phone_number"],
             }
             if person["nick_name"]:
@@ -187,7 +189,7 @@ def process(zone: str, contacts: list = None, contact_id: str = None):  # type: 
     return keys
 
 
-def fingerprint_sound(url: str, contact_id: str) -> str:
+def fingerprint_sound(url: str, contact_id: str) -> Union[str, bool]:
     filename = url.split("/")[-1]
     r = requests.get(url)
     sound = r.content
@@ -283,7 +285,7 @@ def home():
             return (
                 jsonify(
                     {
-                        "message": "You've successfuly reached the auth service but need to provide a token to continue"
+                        "message": "You've successfully reached the auth service but need to provide a token to continue"
                     }
                 ),
                 401,
@@ -308,7 +310,7 @@ if __name__ == "__main__":
     data = {}
     c = util.pull(config=config)
     for zone in zones:
-        if zone[-4:] == "keys":
+        if zone.endswith("keys"):
             logging.debug(f"Initial pull for {zone}")
             data[zone] = process(zone=zone, contacts=c)  # type: ignore
         else:
